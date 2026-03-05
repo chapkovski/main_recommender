@@ -1,0 +1,34 @@
+{{ block title }}
+Final Payment Information
+{{ endblock }}
+
+{{ block content }}
+<p>
+Thank you for completing the study.
+</p>
+
+<h4>Your rating-cost summary</h4>
+<ul>
+    <li>Initial endowment: {{ endowment }}</li>
+    <li>Times you rated in Part 2: {{ num_ratings }}</li>
+    <li>Total rating cost: {{ total_cost }}</li>
+    <li>Remaining endowment: {{ remaining_endowment }}</li>
+</ul>
+
+<h4>Performance bonus rule</h4>
+<p>
+Your bonus is <strong>{{ bonus_per_correct }}</strong> per correctly guessed movie position (up to 5 positions).
+Matching/guessing is processed later, so your final bonus is added after that step.
+</p>
+
+{{ if true_ranking }}
+<h4>Your private ranking from Part 1</h4>
+<ol>
+    {{ for movie in true_ranking }}
+        <li>{{ movie }}</li>
+    {{ endfor }}
+</ol>
+{{ endif }}
+
+{{ next_button }}
+{{ endblock }}

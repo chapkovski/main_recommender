@@ -1,0 +1,109 @@
+<div class="instruction-text">
+    <h3>Overview</h3>
+    <p>
+        In this experiment you will use a <strong>movie recommendation system</strong> similar to systems used on online
+        platforms. The system learns from ratings to improve predictions.
+    </p>
+    <p>
+        You start with an <strong>endowment of EUR 2.50</strong>. You can keep this amount or spend part of it to rate
+        movies. Your final payment depends on your choices, other participants' choices, and how well the system
+        guesses your private movie ranking.
+    </p>
+
+    <h3>The Experiment Has Three Parts</h3>
+    <ol>
+        <li>
+            <strong>Part 1:</strong> A short survey and a ranking of 5 movies from most preferred to least preferred.
+            This ranking is your private "true preference" and is not shown to other participants.
+        </li>
+        <li>
+            <strong>Part 2:</strong> 10 interaction rounds. In each round, you choose whether to rate or skip a movie.
+            Rating costs EUR 0.25. Skipping has no cost.
+        </li>
+        <li>
+            <strong>Part 3:</strong> Final payment based on your rating decisions and how well the system guesses your
+            Part 1 ranking.
+        </li>
+    </ol>
+
+    <h3>Part 1: Survey and Your Private Movie Ranking (alone)</h3>
+    <ul>
+        <li>You answer a short survey about opinions.</li>
+        <li>You rank 5 movies by dragging items into your preferred order.</li>
+        <li>
+            This ranking is private and is used later for evaluating prediction quality.
+            The closer the final guess is to your ranking, the higher your bonus.
+        </li>
+    </ul>
+
+    <h3>Part 2: Interaction Rounds</h3>
+    <p>
+        You play <strong>10 rounds</strong>. You start these rounds with <strong>EUR 2.50</strong>. Each time you choose
+        <strong>Rate</strong>, you pay <strong>EUR 0.25</strong>. Skipping has no cost. Remaining budget is added to your
+        final payment.
+    </p>
+    <p>
+        Every rating (yours or your partner's) helps the recommendation system learn. If both rate in a round,
+        learning improves more than if only one rates.
+    </p>
+
+    <h4>One-round outcomes</h4>
+    <table class="table table-sm table-bordered">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Partner: skip (no cost)</th>
+                <th>Partner: rate (pay EUR 0.25)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>You: skip (no cost)</th>
+                <td>No improvement</td>
+                <td>System learns a bit</td>
+            </tr>
+            <tr>
+                <th>You: rate (pay EUR 0.25)</th>
+                <td>System learns a bit</td>
+                <td>System learns more</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>
+        Approximate learning rule: each rating increases expected accuracy by about 0.10 correctly guessed movie
+        positions on average.
+    </p>
+
+    <h3>Part 3: Final Bonus and Payment</h3>
+    <p>
+        Payment formula:
+        <br />
+        <strong>
+            Final Payment = (EUR 2.50 - EUR 0.25 x your ratings) + (EUR 2 x number of correct guesses)
+        </strong>
+    </p>
+
+    <h4>Examples</h4>
+    <table class="table table-sm table-bordered">
+        <thead>
+            <tr>
+                <th>Ratings you gave</th>
+                <th>Correct guesses</th>
+                <th>Bonus (EUR 2 x correct guesses)</th>
+                <th>Your payment</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>0</td><td>1</td><td>EUR 2</td><td>EUR 4.50</td></tr>
+            <tr><td>0</td><td>3</td><td>EUR 6</td><td>EUR 8.50</td></tr>
+            <tr><td>0</td><td>5</td><td>EUR 10</td><td>EUR 12.50</td></tr>
+            <tr><td>5</td><td>1</td><td>EUR 2</td><td>EUR 3.25</td></tr>
+            <tr><td>5</td><td>3</td><td>EUR 6</td><td>EUR 7.25</td></tr>
+            <tr><td>5</td><td>5</td><td>EUR 10</td><td>EUR 11.25</td></tr>
+            <tr><td>10</td><td>1</td><td>EUR 2</td><td>EUR 2.00</td></tr>
+            <tr><td>10</td><td>3</td><td>EUR 6</td><td>EUR 6.00</td></tr>
+            <tr><td>10</td><td>5</td><td>EUR 10</td><td>EUR 10.00</td></tr>
+        </tbody>
+    </table>
+</div>

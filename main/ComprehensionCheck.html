@@ -1,0 +1,18 @@
+{{ block title }}
+Comprehension Questions
+{{ endblock }}
+
+{{ block content }}
+{{ include 'main/includes/instructions_modal.html' }}
+
+<p>
+Please answer all questions correctly to continue.
+</p>
+
+{{ formfield 'cq_endowment' }}
+{{ formfield 'cq_rating_cost' }}
+{{ formfield 'cq_rounds' }}
+{{ formfield 'cq_max_bonus' }}
+
+{{ next_button }}
+{{ endblock }}

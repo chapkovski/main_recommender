@@ -1,0 +1,23 @@
+{{ block title }}
+Part 2 Complete
+{{ endblock }}
+
+{{ block content }}
+<p>
+You completed 10 rounds.
+</p>
+
+<ul>
+    <li>Initial endowment: {{ endowment }}</li>
+    <li>Number of times you rated: {{ num_ratings }}</li>
+    <li>Total rating cost: {{ total_cost }}</li>
+    <li>Remaining endowment: {{ remaining_endowment }}</li>
+</ul>
+
+<p>
+The performance bonus based on guessed ranking positions is calculated after matching/processing.
+You will now continue to the final questionnaire.
+</p>
+
+{{ next_button }}
+{{ endblock }}

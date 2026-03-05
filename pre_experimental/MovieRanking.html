@@ -1,0 +1,129 @@
+{{ block title }}
+Part 1: Your Private Movie Ranking
+{{ endblock }}
+
+{{ block content }}
+{{ include 'main/includes/instructions_modal.html' }}
+
+<p>
+Drag and drop the movies below into your preferred order.
+Top = the movie you would most like to watch now, bottom = least.
+</p>
+
+<input type="hidden" name="ranking_json" id="ranking_json" />
+
+<ul id="ranking-list" class="ranking-list">
+    {{ for movie in ranking_movies }}
+        <li class="ranking-item" draggable="true" data-title="{{ movie }}">
+            <div class="movie-card">
+                <div class="movie-poster-placeholder">Poster</div>
+                <div class="movie-title">{{ movie }}</div>
+            </div>
+        </li>
+    {{ endfor }}
+</ul>
+
+{{ next_button }}
+
+<style>
+.ranking-list {
+    list-style: none;
+    padding: 0;
+    max-width: 640px;
+}
+.ranking-item {
+    margin: 10px 0;
+    cursor: move;
+}
+.movie-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #d7d7d7;
+    border-radius: 8px;
+    padding: 10px;
+    background: #fafafa;
+}
+.movie-poster-placeholder {
+    width: 56px;
+    height: 74px;
+    border-radius: 4px;
+    border: 1px solid #b9b9b9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #555;
+    background: #ececec;
+}
+.movie-title {
+    font-weight: 600;
+}
+.ranking-item.drag-over .movie-card {
+    border-color: #4d6fff;
+    background: #eef2ff;
+}
+</style>
+
+<script>
+(function() {
+    const list = document.getElementById('ranking-list');
+    const hidden = document.getElementById('ranking_json');
+    let draggedItem = null;
+
+    function saveRanking() {
+        const ranking = Array.from(list.querySelectorAll('.ranking-item'))
+            .map((item) => item.dataset.title);
+        hidden.value = JSON.stringify(ranking);
+    }
+
+    list.querySelectorAll('.ranking-item').forEach((item) => {
+        item.addEventListener('dragstart', () => {
+            draggedItem = item;
+            item.style.opacity = '0.5';
+        });
+
+        item.addEventListener('dragend', () => {
+            item.style.opacity = '1';
+            list.querySelectorAll('.ranking-item').forEach((el) => el.classList.remove('drag-over'));
+            saveRanking();
+        });
+
+        item.addEventListener('dragover', (event) => {
+            event.preventDefault();
+        });
+
+        item.addEventListener('dragenter', (event) => {
+            event.preventDefault();
+            if (item !== draggedItem) {
+                item.classList.add('drag-over');
+            }
+        });
+
+        item.addEventListener('dragleave', () => {
+            item.classList.remove('drag-over');
+        });
+
+        item.addEventListener('drop', (event) => {
+            event.preventDefault();
+            item.classList.remove('drag-over');
+            if (!draggedItem || draggedItem === item) {
+                return;
+            }
+            const allItems = Array.from(list.children);
+            const draggedIndex = allItems.indexOf(draggedItem);
+            const targetIndex = allItems.indexOf(item);
+
+            if (draggedIndex < targetIndex) {
+                list.insertBefore(draggedItem, item.nextSibling);
+            } else {
+                list.insertBefore(draggedItem, item);
+            }
+            saveRanking();
+        });
+    });
+
+    saveRanking();
+})();
+</script>
+{{ endblock }}
