@@ -4,8 +4,9 @@ pages:
     elements:
       - type: radiogroup
         name: decision
-        title: Would you like to rate this movie?
+        title: How much would like to see this movie realized?
         isRequired: true
+        colCount: 2
         choices:
           - value: skip
             text: Skip (no cost)
@@ -16,6 +17,7 @@ pages:
         title: If you choose to rate, what is your rating?
         isRequired: true
         visibleIf: "{decision} = 'rate'"
+        colCount: 5
         choices:
           - value: 1
             text: 1 - Strongly dislike
