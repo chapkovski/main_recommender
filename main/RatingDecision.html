@@ -158,6 +158,25 @@ Movie {{ movie_number }} of {{ total_movies }}
 
 {{ include 'main/includes/instructions_modal.html' }}
 
+<div class="alert alert-warning border border-3 border-dark shadow-sm">
+    <div class="fw-bold mb-2">Important Matching Information</div>
+    <p class="mb-2">
+        Remember: this movie will also be ranked by another participant.
+        This participant <strong>{{ peer_relation }}</strong> with you on the following
+        <strong>{{ peer_topic_label }}</strong> statements:
+    </p>
+    <ul class="mb-0">
+        {{ for statement in peer_statements }}
+            <li>
+                {{ statement.text }}
+                {{ if statement.response }}
+                    <span class="text-muted">(your answer: {{ statement.response }})</span>
+                {{ endif }}
+            </li>
+        {{ endfor }}
+    </ul>
+</div>
+
 <div class="alert alert-light" style="border: 1px solid #d7d7d7;">
     <div><strong>Current budget:</strong> {{ remaining_budget }}</div>
     <div><strong>Spent so far:</strong> {{ spent_so_far }}</div>

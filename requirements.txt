@@ -4,3 +4,4 @@
 otree>=5.0.0a21
 psycopg2>=2.8.4
 PyYAML>=6.0
+certifi>=2024.0.0

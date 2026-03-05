@@ -3,30 +3,364 @@ Part 1: Your Private Movie Ranking
 {{ endblock }}
 
 {{ block styles }}
-{{ include 'main/includes/surveyjs_css.html' }}
-{{ include 'main/includes/surveyjs_shell_style.html' }}
+<style>
+[v-cloak] {
+    display: none;
+}
+.tmdb-shell {
+    border: 1px solid #d6d9dd;
+    border-radius: 10px;
+    background: #fff;
+}
+.tmdb-card {
+    border: 1px solid #e6dfd6;
+    border-radius: 10px;
+    background: #fffdf8;
+    box-shadow: 0 12px 28px rgba(26, 26, 26, 0.06);
+}
+.poster {
+    width: 54px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #d9d2c8;
+    background: #f3eee6;
+}
+.rank-pill {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #ffe3d8;
+    color: #e3552c;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+}
+.list-group-item.is-dragging {
+    opacity: 0.6;
+}
+.list-group-item.is-drag-over {
+    background: #fff3ec;
+}
+</style>
 {{ endblock }}
 
 {{ block content }}
 {{ include 'main/includes/instructions_modal.html' }}
 
 <p>
-Drag and drop the movies below into your preferred order.
-Top = the movie you would most like to watch now, bottom = least.
+Search TMDb and build your top {{ favorites_required }} movies. Drag to reorder your preference list (rank 1 = strongest preference).
 </p>
 
 {{ if form.errors }}
 <div class="alert alert-danger">{{ form.errors }}</div>
 {{ endif }}
 
-<div class="survey-shell">
-    <div id="surveyContainer"></div>
+<div id="tmdbApp" class="tmdb-shell p-3" v-cloak>
+    <div class="row g-3 align-items-center mb-3">
+        <div class="col-md-8">
+            <input
+                v-model="query"
+                type="text"
+                class="form-control form-control-lg"
+                placeholder="Type a movie name, e.g. Titanic"
+                autocomplete="off"
+                @keydown.enter.prevent="runSearch"
+            />
+        </div>
+        <div class="col-md-4 d-grid d-md-flex gap-2">
+            <button class="btn btn-primary flex-fill" type="button" :disabled="isLoading" @click="runSearch">Search</button>
+            <button class="btn btn-outline-secondary flex-fill" type="button" @click="clearSearch">Clear</button>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-muted small">[[ status ]]</span>
+        <span class="badge text-bg-dark">[[ favorites.length ]]/[[ maxFavorites ]] selected</span>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-5">
+            <div class="tmdb-card h-100">
+                <div class="p-3 border-bottom">
+                    <h4 class="h6 mb-1">Preferred [[ maxFavorites ]]</h4>
+                    <p class="small text-muted mb-0">Drag rows to reorder your ranking.</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li v-if="!favorites.length" class="list-group-item text-muted">No movies selected yet.</li>
+                    <li
+                        v-for="(movie, index) in favorites"
+                        :key="movie.id"
+                        class="list-group-item d-flex align-items-start gap-3"
+                        :class="{ 'is-dragging': draggingIndex === index, 'is-drag-over': dragOverIndex === index }"
+                        draggable="true"
+                        @dragstart="onDragStart(index, $event)"
+                        @dragover.prevent="onDragOver(index)"
+                        @drop.prevent="onDrop(index)"
+                        @dragend="onDragEnd"
+                    >
+                        <div class="rank-pill">[[ index + 1 ]]</div>
+                        <img v-if="posterUrl(movie.poster_path)" class="poster" :src="posterUrl(movie.poster_path)" :alt="movie.title" />
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold">[[ movie.title ]]</div>
+                            <div class="small text-muted">[[ releaseYear(movie.release_date) ]]</div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger" type="button" @click="removeFavorite(movie.id)">Remove</button>
+                    </li>
+                </ul>
+                <div class="p-3 border-top">
+                    <button class="btn btn-outline-secondary w-100" type="button" :disabled="!favorites.length" @click="resetFavorites">Reset list</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="tmdb-card h-100">
+                <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h4 class="h6 mb-0">Search Results</h4>
+                    <span class="badge text-bg-light" v-if="results.length">[[ results.length ]] shown</span>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li v-if="isLoading && !results.length" class="list-group-item text-muted">Searching...</li>
+                    <li v-else-if="!results.length" class="list-group-item text-muted">Search to load movies.</li>
+                    <li
+                        v-for="movie in results"
+                        :key="movie.id"
+                        class="list-group-item d-flex align-items-start justify-content-between gap-3"
+                    >
+                        <div class="d-flex gap-3">
+                            <img v-if="posterUrl(movie.poster_path)" class="poster" :src="posterUrl(movie.poster_path)" :alt="movie.title" />
+                            <div>
+                                <div class="fw-semibold">[[ movie.title ]]</div>
+                                <div class="small text-muted">[[ releaseYear(movie.release_date) ]]</div>
+                            </div>
+                        </div>
+                        <button
+                            class="btn btn-sm btn-primary"
+                            type="button"
+                            :disabled="isFavorite(movie.id) || favorites.length >= maxFavorites"
+                            @click="addFavorite(movie)"
+                        >
+                            [[ isFavorite(movie.id) ? 'In list' : (favorites.length >= maxFavorites ? 'Full' : 'Add') ]]
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
 
-<input type="hidden" id="surveyResults" name="surveyResults" value="">
+<input type="hidden" id="ranking_json" name="ranking_json" value="{{ ranking_json_value }}" />
+
+{{ next_button }}
 {{ endblock }}
 
 {{ block scripts }}
-{{ include 'main/includes/surveyjs_js.html' }}
-{{ include 'main/includes/surveyjs_init.html' }}
+<script type="module">
+import { createApp, ref, onMounted, watch } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
+
+const MAX_FAVORITES = {{ favorites_required }};
+
+function parseInitialRanking(raw) {
+    if (!raw) return [];
+    try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch {
+        return [];
+    }
+}
+
+const app = createApp({
+    setup() {
+        const query = ref("");
+        const status = ref("Ready to search.");
+        const isLoading = ref(false);
+        const results = ref([]);
+        const favorites = ref(parseInitialRanking(document.getElementById("ranking_json").value));
+        const draggingIndex = ref(null);
+        const dragOverIndex = ref(null);
+        const activeRequestId = ref(0);
+
+        const setStatus = (text) => {
+            status.value = text;
+        };
+
+        const rankingInput = () => document.getElementById("ranking_json");
+        const nextButton = () => document.querySelector(".otree-btn-next") || document.querySelector("button[type='submit']");
+
+        const syncRankingInput = () => {
+            const serialized = JSON.stringify(
+                favorites.value.map((movie) => ({
+                    id: movie.id,
+                    title: movie.title || "",
+                    release_date: movie.release_date || "",
+                    poster_path: movie.poster_path || "",
+                }))
+            );
+            rankingInput().value = serialized;
+        };
+
+        const syncContinueState = () => {
+            const btn = nextButton();
+            if (btn) {
+                btn.disabled = favorites.value.length !== MAX_FAVORITES;
+            }
+        };
+
+        const posterUrl = (posterPath) => posterPath ? `https://image.tmdb.org/t/p/w185${posterPath}` : "";
+        const releaseYear = (releaseDate) => releaseDate ? String(releaseDate).slice(0, 4) : "????";
+        const isFavorite = (id) => favorites.value.some((m) => m.id === id);
+
+        const addFavorite = (movie) => {
+            if (favorites.value.length >= MAX_FAVORITES) {
+                setStatus(`You already selected ${MAX_FAVORITES} movies.`);
+                return;
+            }
+            if (isFavorite(movie.id)) {
+                setStatus("That movie is already in your list.");
+                return;
+            }
+            favorites.value = [
+                {
+                    id: movie.id,
+                    title: movie.title || "",
+                    release_date: movie.release_date || "",
+                    poster_path: movie.poster_path || "",
+                },
+                ...favorites.value,
+            ];
+            setStatus(`Added \"${movie.title}\".`);
+        };
+
+        const removeFavorite = (id) => {
+            favorites.value = favorites.value.filter((m) => m.id !== id);
+            setStatus("Removed movie from your list.");
+        };
+
+        const resetFavorites = () => {
+            favorites.value = [];
+            setStatus("Reset your selected movies.");
+        };
+
+        const onDragStart = (index, event) => {
+            draggingIndex.value = index;
+            event.dataTransfer.effectAllowed = "move";
+            event.dataTransfer.setData("text/plain", String(index));
+        };
+
+        const onDragOver = (index) => {
+            dragOverIndex.value = index;
+        };
+
+        const onDrop = (index) => {
+            const from = draggingIndex.value;
+            if (from === null || from === index) {
+                draggingIndex.value = null;
+                dragOverIndex.value = null;
+                return;
+            }
+            const updated = [...favorites.value];
+            const [moved] = updated.splice(from, 1);
+            updated.splice(index, 0, moved);
+            favorites.value = updated;
+            draggingIndex.value = null;
+            dragOverIndex.value = null;
+            setStatus("Updated ranking order.");
+        };
+
+        const onDragEnd = () => {
+            draggingIndex.value = null;
+            dragOverIndex.value = null;
+        };
+
+        const runSearch = () => {
+            const q = query.value.trim();
+            if (q.length < 2) {
+                setStatus("Type at least 2 characters to search.");
+                return;
+            }
+
+            if (typeof liveSend !== "function") {
+                setStatus("Live search is not available on this page.");
+                return;
+            }
+
+            activeRequestId.value += 1;
+            isLoading.value = true;
+            setStatus("Searching TMDb...");
+            liveSend({
+                type: "tmdb_search",
+                q,
+                request_id: activeRequestId.value,
+            });
+        };
+
+        const clearSearch = () => {
+            query.value = "";
+            results.value = [];
+            setStatus("Cleared search results.");
+        };
+
+        window.liveRecv = (data) => {
+            const rid = data && data.request_id;
+            if (rid && rid !== activeRequestId.value) {
+                return;
+            }
+
+            if (data.type === "search_results") {
+                results.value = Array.isArray(data.results) ? data.results : [];
+                isLoading.value = false;
+                setStatus(results.value.length ? `Found ${results.value.length} movies.` : "No matches found.");
+                return;
+            }
+
+            if (data.type === "search_error") {
+                isLoading.value = false;
+                setStatus(data.message || "Search failed.");
+            }
+        };
+
+        watch(
+            favorites,
+            () => {
+                syncRankingInput();
+                syncContinueState();
+            },
+            { deep: true }
+        );
+
+        onMounted(() => {
+            syncRankingInput();
+            syncContinueState();
+        });
+
+        return {
+            query,
+            status,
+            isLoading,
+            results,
+            favorites,
+            maxFavorites: MAX_FAVORITES,
+            draggingIndex,
+            dragOverIndex,
+            posterUrl,
+            releaseYear,
+            isFavorite,
+            addFavorite,
+            removeFavorite,
+            resetFavorites,
+            onDragStart,
+            onDragOver,
+            onDrop,
+            onDragEnd,
+            runSearch,
+            clearSearch,
+        };
+    },
+});
+
+app.config.compilerOptions.delimiters = ["[[", "]]"];
+app.mount("#tmdbApp");
+</script>
 {{ endblock }}

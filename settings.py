@@ -1,4 +1,25 @@
 from os import environ
+from pathlib import Path
+
+
+def load_dotenv():
+    dotenv_path = Path(__file__).resolve().parent / '.env'
+    if not dotenv_path.exists():
+        return
+
+    for raw_line in dotenv_path.read_text(encoding='utf-8').splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith('#') or '=' not in line:
+            continue
+
+        key, value = line.split('=', 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and key not in environ:
+            environ[key] = value
+
+
+load_dotenv()
 
 SESSION_CONFIGS = [
     dict(
@@ -21,9 +42,22 @@ SESSION_CONFIG_DEFAULTS = dict(
     prolific_base_return_url='https://app.prolific.com/submissions/complete?cc=',
     prolific_return_code='CW6532UV',
     prolific_no_id_code='NO_ID',
+    tmdb_api_key_env_var='TMDB_API_KEY',
+    tmdb_search_base_url='https://api.themoviedb.org/3/search/movie',
+    tmdb_language='en-US',
+    tmdb_include_adult=False,
+    tmdb_results_limit=12,
+    tmdb_favorites_required=5,
+    tmdb_debug_errors=False,
 )
 
-PARTICIPANT_FIELDS = []
+PARTICIPANT_FIELDS = [
+    'treatment_heterogeneous',
+    'treatment_political',
+    'treatment_label',
+    'pol_question_order',
+    'pol_answers_json',
+]
 SESSION_FIELDS = []
 
 # ISO-639 code

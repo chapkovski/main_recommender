@@ -1,5 +1,5 @@
 {{ block title }}
-Comprehension Questions
+Opinion Statements
 {{ endblock }}
 
 {{ block styles }}
@@ -8,10 +8,13 @@ Comprehension Questions
 {{ endblock }}
 
 {{ block content }}
-{{ include 'main/includes/instructions_modal.html' }}
+<p>
+Now please indicate how much you agree or disagree with {{ pol_question_count }} statements.
+</p>
 
-<p>Please answer all questions correctly to continue.</p>
-
+{{ if form.errors }}
+<div class="alert alert-danger">{{ form.errors }}</div>
+{{ endif }}
 
 <div class="survey-shell">
     <div id="surveyContainer"></div>

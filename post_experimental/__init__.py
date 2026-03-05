@@ -83,7 +83,11 @@ class FinalPaymentInfo(Page):
         total_cost = C.RATING_COST * num_ratings
         remaining_endowment = C.ENDOWMENT - total_cost
 
-        true_ranking = player.participant.vars.get('true_movie_ranking', [])
+        true_ranking_raw = player.participant.vars.get('true_movie_ranking', [])
+        if true_ranking_raw and isinstance(true_ranking_raw[0], dict):
+            true_ranking = [item.get('title', '') for item in true_ranking_raw if item.get('title')]
+        else:
+            true_ranking = true_ranking_raw
         return dict(
             num_ratings=num_ratings,
             total_cost=total_cost,
