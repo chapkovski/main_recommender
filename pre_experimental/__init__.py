@@ -18,6 +18,11 @@ from surveyjs_page import SurveyJSPage
 
 logger = logging.getLogger(__name__)
 
+try:
+    from user_agents import parse as parse_user_agent
+except ImportError:
+    parse_user_agent = None
+
 
 doc = """
 Pre-experimental survey and private movie ranking.
@@ -183,6 +188,7 @@ def build_pol_survey_definition(order):
                         name=question['name'],
                         title=question['text'],
                         isRequired=True,
+                        colCount=6,
                         choices=LIKERT6_CHOICES,
                     )
                 ],
@@ -218,6 +224,23 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
+    consent_given = models.BooleanField(
+        initial=False,
+        label='Yes, I have read the participant information and I consent to participate.',
+    )
+
+    comprehension_failed_attempts = models.IntegerField(initial=0)
+
+    user_agent_browser = models.StringField(blank=True)
+    user_agent_browser_version = models.StringField(blank=True)
+    user_agent_os = models.StringField(blank=True)
+    user_agent_os_version = models.StringField(blank=True)
+    user_agent_device = models.StringField(blank=True)
+    user_agent_is_bot = models.BooleanField(initial=False)
+    user_agent_is_mobile = models.BooleanField(initial=False)
+    user_agent_is_tablet = models.BooleanField(initial=False)
+    user_agent_is_pc = models.BooleanField(initial=False)
+
     cq_endowment = models.StringField(
         choices=[
             ['1.00', 'EUR 1.00'],
@@ -307,7 +330,33 @@ def creating_session(subsession: BaseSubsession):
 
         player.pol_question_order_json = json.dumps(order)
         player.pol_answers_json = '{}'
+        player.comprehension_failed_attempts = 0
+        participant.vars['comprehension_failed_attempts'] = 0
         sync_player_treatment_fields(player)
+
+
+class Consent(Page):
+    form_model = 'player'
+    form_fields = ['consent_given']
+
+    def get(self, *args, **kwargs):
+        user_agent_string = self.request.headers.get('User-Agent', '')
+        if parse_user_agent:
+            user_agent = parse_user_agent(user_agent_string)
+            self.player.user_agent_browser = user_agent.browser.family or ''
+            self.player.user_agent_browser_version = user_agent.browser.version_string or ''
+            self.player.user_agent_os = user_agent.os.family or ''
+            self.player.user_agent_os_version = user_agent.os.version_string or ''
+            self.player.user_agent_device = user_agent.device.family or ''
+            self.player.user_agent_is_mobile = bool(user_agent.is_mobile)
+            self.player.user_agent_is_tablet = bool(user_agent.is_tablet)
+            self.player.user_agent_is_pc = bool(user_agent.is_pc)
+            self.player.user_agent_is_bot = bool(user_agent.is_bot)
+        else:
+            logger.warning('user-agents package not installed; User-Agent details were not parsed.')
+            self.player.user_agent_device = user_agent_string[:255]
+        self.player.save()
+        return super().get(*args, **kwargs)
 
 
 class InstructionsIntro(Page):
@@ -355,7 +404,14 @@ class ComprehensionCheck(SurveyJSPage):
 
         for field_name, expected in correct_answers.items():
             if values[field_name] != expected:
+                attempts = int(player.participant.vars.get('comprehension_failed_attempts', 0)) + 1
+                player.participant.vars['comprehension_failed_attempts'] = attempts
+                player.comprehension_failed_attempts = attempts
                 return 'One or more answers are incorrect. Please review the instructions and try again.'
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        player.comprehension_failed_attempts = int(player.participant.vars.get('comprehension_failed_attempts', 0))
 
 
 class PolPage(SurveyJSPage):
@@ -522,7 +578,7 @@ class MovieRanking(Page):
 
 
 page_sequence = [
-    InstructionsIntro, ComprehensionCheck, PolPage, 
+    Consent, InstructionsIntro, ComprehensionCheck, PolPage,
     # PoliticalSurvey,
     MovieRanking
     ]
