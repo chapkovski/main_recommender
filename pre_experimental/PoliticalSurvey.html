@@ -2,12 +2,28 @@
 Part 1: Short Survey
 {{ endblock }}
 
+{{ block styles }}
+{{ include 'main/includes/surveyjs_css.html' }}
+{{ include 'main/includes/surveyjs_shell_style.html' }}
+{{ endblock }}
+
 {{ block content }}
 <p>
 Please answer the following political opinion questions. After this page, you will rank 5 movies.
 </p>
 
-{{ formfields }}
+{{ if form.errors }}
+<div class="alert alert-danger">{{ form.errors }}</div>
+{{ endif }}
 
-{{ next_button }}
+<div class="survey-shell">
+    <div id="surveyContainer"></div>
+</div>
+
+<input type="hidden" id="surveyResults" name="surveyResults" value="">
+{{ endblock }}
+
+{{ block scripts }}
+{{ include 'main/includes/surveyjs_js.html' }}
+{{ include 'main/includes/surveyjs_init.html' }}
 {{ endblock }}

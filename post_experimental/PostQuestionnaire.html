@@ -2,12 +2,26 @@
 Part 3: Post-Experimental Questionnaire
 {{ endblock }}
 
+{{ block styles }}
+{{ include 'main/includes/surveyjs_css.html' }}
+{{ include 'main/includes/surveyjs_shell_style.html' }}
+{{ endblock }}
+
 {{ block content }}
-<p>
-Please answer the following final questions.
-</p>
+<p>Please answer the following final questions.</p>
 
-{{ formfields }}
+{{ if form.errors }}
+<div class="alert alert-danger">{{ form.errors }}</div>
+{{ endif }}
 
-{{ next_button }}
+<div class="survey-shell">
+    <div id="surveyContainer"></div>
+</div>
+
+<input type="hidden" id="surveyResults" name="surveyResults" value="">
+{{ endblock }}
+
+{{ block scripts }}
+{{ include 'main/includes/surveyjs_js.html' }}
+{{ include 'main/includes/surveyjs_init.html' }}
 {{ endblock }}

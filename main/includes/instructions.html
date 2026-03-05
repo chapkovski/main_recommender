@@ -17,7 +17,7 @@
             This ranking is your private "true preference" and is not shown to other participants.
         </li>
         <li>
-            <strong>Part 2:</strong> 10 interaction rounds. In each round, you choose whether to rate or skip a movie.
+            <strong>Part 2:</strong> {{ num_rounds }} interaction rounds. In each round, you choose whether to rate or skip a movie.
             Rating costs EUR 0.25. Skipping has no cost.
         </li>
         <li>
@@ -38,7 +38,7 @@
 
     <h3>Part 2: Interaction Rounds</h3>
     <p>
-        You play <strong>10 rounds</strong>. You start these rounds with <strong>EUR 2.50</strong>. Each time you choose
+        You play <strong>{{ num_rounds }} rounds</strong>. You start these rounds with <strong>EUR 2.50</strong>. Each time you choose
         <strong>Rate</strong>, you pay <strong>EUR 0.25</strong>. Skipping has no cost. Remaining budget is added to your
         final payment.
     </p>

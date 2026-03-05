@@ -1,9 +1,17 @@
 from otree.api import *
+import json
+
+from starlette.responses import RedirectResponse
+
+from survey_data import load_survey_definition
+from surveyjs_page import SurveyJSPage
 
 
 doc = """
 Post-experimental questionnaire and payment summary.
 """
+
+POST_QUESTIONNAIRE_SURVEY_DEFINITION = load_survey_definition('survey_post_questionnaire.yaml')
 
 
 class C(BaseConstants):
@@ -50,9 +58,22 @@ class Player(BasePlayer):
     )
 
 
-class PostQuestionnaire(Page):
+class PostQuestionnaire(SurveyJSPage):
     form_model = 'player'
     form_fields = ['clarity_instructions', 'system_understanding', 'decision_difficulty', 'strategy_text', 'comments']
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        return dict(survey_json=json.dumps(POST_QUESTIONNAIRE_SURVEY_DEFINITION))
+
+    def process_survey_data(self, data):
+        return dict(
+            clarity_instructions=data.get('clarity_instructions'),
+            system_understanding=data.get('system_understanding'),
+            decision_difficulty=data.get('decision_difficulty'),
+            strategy_text=data.get('strategy_text'),
+            comments=data.get('comments'),
+        )
 
 
 class FinalPaymentInfo(Page):
@@ -73,4 +94,25 @@ class FinalPaymentInfo(Page):
         )
 
 
-page_sequence = [PostQuestionnaire, FinalPaymentInfo]
+class FinalForProlific(Page):
+    @staticmethod
+    def is_displayed(player: Player):
+        return (
+            player.round_number == C.NUM_ROUNDS
+            and player.session.config.get('for_prolific', False)
+            and player.session.config['app_sequence'][-1] == C.NAME_IN_URL
+        )
+
+    def get(self):
+        base_return_url = self.session.config.get(
+            'prolific_base_return_url',
+            'https://app.prolific.com/submissions/complete?cc=',
+        )
+        if not self.participant.label:
+            ending = self.session.config.get('prolific_no_id_code', 'NO_ID')
+        else:
+            ending = self.session.config.get('prolific_return_code', 'CW6532UV')
+        return RedirectResponse(f'{base_return_url}{ending}')
+
+
+page_sequence = [PostQuestionnaire, FinalPaymentInfo, FinalForProlific]

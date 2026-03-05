@@ -1,0 +1,27 @@
+showQuestionNumbers: off
+pages:
+  - name: post_questionnaire
+    elements:
+      - type: radiogroup
+        name: clarity_instructions
+        title: How clear were the instructions? (1 = very unclear, 7 = very clear)
+        isRequired: true
+        choices: [1, 2, 3, 4, 5, 6, 7]
+      - type: radiogroup
+        name: system_understanding
+        title: How well do you think you understood how the recommendation system learns? (1 = not at all, 7 = very well)
+        isRequired: true
+        choices: [1, 2, 3, 4, 5, 6, 7]
+      - type: radiogroup
+        name: decision_difficulty
+        title: How difficult were your rating/skip decisions? (1 = very easy, 7 = very difficult)
+        isRequired: true
+        choices: [1, 2, 3, 4, 5, 6, 7]
+      - type: comment
+        name: strategy_text
+        title: Briefly describe your strategy (optional).
+        isRequired: false
+      - type: comment
+        name: comments
+        title: Any additional comments? (optional)
+        isRequired: false

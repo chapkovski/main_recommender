@@ -1,49 +1,28 @@
 from otree.api import *
+import json
 import random
 
+from movie_data import MOVIES as MOVIE_DATA, NUM_ROUNDS as MOVIE_NUM_ROUNDS
+from survey_data import load_survey_definition
+from surveyjs_page import SurveyJSPage
 
 doc = """
-Main experiment: 10 independent rating rounds.
+Main experiment: independent rating rounds.
 """
+
+RATING_SURVEY_DEFINITION = load_survey_definition('survey_main_rating.yaml')
 
 
 class C(BaseConstants):
     NAME_IN_URL = 'main'
     PLAYERS_PER_GROUP = None
-    NUM_ROUNDS = 10
+    MOVIES = MOVIE_DATA
+    NUM_ROUNDS = MOVIE_NUM_ROUNDS
 
     ENDOWMENT = cu(2.50)
     RATING_COST = cu(0.25)
     BONUS_PER_CORRECT = cu(2)
     MAX_CORRECT = 5
-
-    MOVIE_POOL = [
-        'Civil War',
-        'The Apprentice',
-        'Oppenheimer',
-        'Killers of the Flower Moon',
-        'The Zone of Interest',
-        '12.12: The Day',
-        'Io Capitano',
-        'Green Border',
-        'Golda',
-        'Rustin',
-        'Napoleon',
-        'The Old Oak',
-        '20 Days in Mariupol',
-        'Origin',
-        'Article 370',
-        "Bobi Wine: The People's President",
-        'Seven Winters in Tehran',
-        'Occupied City',
-        'Cairo Conspiracy (Boy from Heaven)',
-        "The Teachers' Lounge",
-        'Main Atal Hoon',
-        'The Kerala Story',
-        'The Eternal Memory',
-        'Four Daughters',
-        'Argentina, 1985',
-    ]
 
 
 def creating_session(subsession: BaseSubsession):
@@ -51,7 +30,7 @@ def creating_session(subsession: BaseSubsession):
         return
 
     for player in subsession.get_players():
-        player.participant.vars['movie_order_main'] = random.sample(C.MOVIE_POOL, C.NUM_ROUNDS)
+        player.participant.vars['movie_order_main'] = random.sample(C.MOVIES, C.NUM_ROUNDS)
 
 
 class Subsession(BaseSubsession):
@@ -88,7 +67,7 @@ class Player(BasePlayer):
         return movie_order[self.round_number - 1]
 
 
-class RatingDecision(Page):
+class RatingDecision(SurveyJSPage):
     form_model = 'player'
     form_fields = ['decision', 'movie_rating']
 
@@ -98,11 +77,20 @@ class RatingDecision(Page):
         spent_so_far = sum((round_player.round_cost for round_player in player.in_previous_rounds()), cu(0))
         remaining_budget = C.ENDOWMENT - spent_so_far
         return dict(
-            movie_title=movie,
-            round_number=player.round_number,
-            total_rounds=C.NUM_ROUNDS,
+            movie=movie,
+            movie_number=player.round_number,
+            total_movies=C.NUM_ROUNDS,
+            movie_image_url=f"/static/{movie['image']}",
+            survey_json=json.dumps(RATING_SURVEY_DEFINITION),
+            num_rounds=C.NUM_ROUNDS,
             spent_so_far=spent_so_far,
             remaining_budget=remaining_budget,
+        )
+
+    def process_survey_data(self, data):
+        return dict(
+            decision=data.get('decision'),
+            movie_rating=data.get('movie_rating'),
         )
 
     @staticmethod
@@ -112,7 +100,7 @@ class RatingDecision(Page):
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        player.movie_title = player.current_movie()
+        player.movie_title = player.current_movie()['title']
         if player.decision == 'rate':
             player.round_cost = C.RATING_COST
         else:
@@ -137,6 +125,7 @@ class MainResults(Page):
         total_cost = C.RATING_COST * num_ratings
         remaining_endowment = C.ENDOWMENT - total_cost
         return dict(
+            total_rounds=C.NUM_ROUNDS,
             num_ratings=num_ratings,
             total_cost=total_cost,
             remaining_endowment=remaining_endowment,

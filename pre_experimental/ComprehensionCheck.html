@@ -2,17 +2,28 @@
 Comprehension Questions
 {{ endblock }}
 
+{{ block styles }}
+{{ include 'main/includes/surveyjs_css.html' }}
+{{ include 'main/includes/surveyjs_shell_style.html' }}
+{{ endblock }}
+
 {{ block content }}
 {{ include 'main/includes/instructions_modal.html' }}
 
-<p>
-Please answer all questions correctly to continue.
-</p>
+<p>Please answer all questions correctly to continue.</p>
 
-{{ formfield 'cq_endowment' }}
-{{ formfield 'cq_rating_cost' }}
-{{ formfield 'cq_rounds' }}
-{{ formfield 'cq_max_bonus' }}
+{{ if form.errors }}
+<div class="alert alert-danger">{{ form.errors }}</div>
+{{ endif }}
 
-{{ next_button }}
+<div class="survey-shell">
+    <div id="surveyContainer"></div>
+</div>
+
+<input type="hidden" id="surveyResults" name="surveyResults" value="">
+{{ endblock }}
+
+{{ block scripts }}
+{{ include 'main/includes/surveyjs_js.html' }}
+{{ include 'main/includes/surveyjs_init.html' }}
 {{ endblock }}

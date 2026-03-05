@@ -1,0 +1,42 @@
+showQuestionNumbers: off
+pages:
+  - name: comprehension
+    elements:
+      - type: radiogroup
+        name: cq_endowment
+        title: What is your starting endowment for Part 2?
+        isRequired: true
+        choices:
+          - value: "1.00"
+            text: EUR 1.00
+          - value: "2.50"
+            text: EUR 2.50
+          - value: "5.00"
+            text: EUR 5.00
+      - type: radiogroup
+        name: cq_rating_cost
+        title: How much does each rating cost?
+        isRequired: true
+        choices:
+          - value: "0.10"
+            text: EUR 0.10
+          - value: "0.25"
+            text: EUR 0.25
+          - value: "0.50"
+            text: EUR 0.50
+      - type: radiogroup
+        name: cq_rounds
+        title: How many interaction rounds are there?
+        isRequired: true
+        choices: []
+      - type: radiogroup
+        name: cq_max_bonus
+        title: What is the maximum performance bonus?
+        isRequired: true
+        choices:
+          - value: "5"
+            text: Up to EUR 5
+          - value: "10"
+            text: Up to EUR 10
+          - value: "15"
+            text: Up to EUR 15

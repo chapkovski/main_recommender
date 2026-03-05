@@ -1,0 +1,29 @@
+showQuestionNumbers: off
+pages:
+  - name: movie_rating
+    elements:
+      - type: radiogroup
+        name: decision
+        title: Would you like to rate this movie?
+        isRequired: true
+        choices:
+          - value: skip
+            text: Skip (no cost)
+          - value: rate
+            text: Rate this movie (pay EUR 0.25)
+      - type: radiogroup
+        name: movie_rating
+        title: If you choose to rate, what is your rating?
+        isRequired: true
+        visibleIf: "{decision} = 'rate'"
+        choices:
+          - value: 1
+            text: 1 - Strongly dislike
+          - value: 2
+            text: 2 - Dislike
+          - value: 3
+            text: 3 - Neutral
+          - value: 4
+            text: 4 - Like
+          - value: 5
+            text: 5 - Strongly like

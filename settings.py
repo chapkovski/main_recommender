@@ -14,7 +14,13 @@ SESSION_CONFIGS = [
 # e.g. self.session.config['participation_fee']
 
 SESSION_CONFIG_DEFAULTS = dict(
-    real_world_currency_per_point=1.00, participation_fee=0.00, doc=''
+    real_world_currency_per_point=1.00,
+    participation_fee=0.00,
+    doc='',
+    for_prolific=False,
+    prolific_base_return_url='https://app.prolific.com/submissions/complete?cc=',
+    prolific_return_code='CW6532UV',
+    prolific_no_id_code='NO_ID',
 )
 
 PARTICIPANT_FIELDS = []

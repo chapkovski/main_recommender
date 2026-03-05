@@ -1,0 +1,25 @@
+showQuestionNumbers: off
+pages:
+  - name: political_survey
+    elements:
+      - type: rating
+        name: politics_ideology
+        title: In politics, where do you place yourself? (0 = Left, 10 = Right)
+        isRequired: true
+        rateMin: 0
+        rateMax: 10
+      - type: radiogroup
+        name: politics_interest
+        title: How interested are you in politics? (1 = Not at all, 5 = Very interested)
+        isRequired: true
+        choices: [1, 2, 3, 4, 5]
+      - type: radiogroup
+        name: migration_policy
+        title: Migration policy should be... (1 = much more open, 5 = much stricter)
+        isRequired: true
+        choices: [1, 2, 3, 4, 5]
+      - type: radiogroup
+        name: climate_priority
+        title: Climate protection should have priority even if costly (1 = strongly disagree, 5 = strongly agree)
+        isRequired: true
+        choices: [1, 2, 3, 4, 5]

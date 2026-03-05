@@ -1,0 +1,79 @@
+- title: "The Watchers"
+  category: "Political -- Neutral (Surveillance and privacy)"
+  synopsis: "In a near future, cameras and algorithms monitor everyone in the name of safety. A data analyst begins to question whether constant surveillance protects people or quietly strips away freedom from all sides."
+  image: "images/the_wachters.png"
+
+- title: "Under Cover"
+  category: "Political -- Left (LGBTQ+ rights)"
+  synopsis: "New laws quietly limit LGBTQ+ rights, putting families and communities at risk. As officials deny the harm, a journalist tracks the real consequences behind closed doors."
+  image: "images/undercover.png"
+
+- title: "Silicon Circus"
+  category: "Political -- Left (Immigration / undocumented workers)"
+  synopsis: "Silicon Circus loves \"global talent,\" but many workers are immigrants, and some are undocumented. They joke between meetings until panic hits. When an audit arrives, one employee risks everything to protect the people who built the company."
+  image: "images/silicon_circus.png"
+
+- title: "Glory Before Dawn"
+  category: "Political -- Right (Borders and security)"
+  synopsis: "At a remote border before sunrise, pressure builds as crossings increase and control slips. With orders to hold the line at all costs, one soldier believes that strength, order, and firm borders are the only way to stop chaos from spreading."
+  image: "images/glory_dawn.png"
+
+- title: "Divided We Stand"
+  category: "Political -- Right (Tradition and authority)"
+  synopsis: "As protests shake the nation and long-standing norms are challenged, a veteran leader fights to defend tradition, authority, and national identity. With compromise seen as weakness, every decision risks deepening the divide."
+  image: "images/divided_we_stand.png"
+
+- title: "Broken Care"
+  category: "Political -- Left (Universal healthcare / medical debt)"
+  synopsis: "Denied care and pushed to the edge, doctors bend the rules to save patients who cannot pay. As bills pile up and administrators threaten punishment, one physician risks everything to expose a system where money decides who lives and who is turned away."
+  image: "images/broken_care.png"
+
+- title: "Workers' Strike"
+  category: "Political -- Left (Workers rights / corporate exploitation)"
+  synopsis: "After a serious workplace injury is covered up, workers begin meeting in secret. Cameras watch the doors, managers threaten layoffs, and families depend on every paycheck. Still, the group plans a strike, betting their futures on one risky push for safety and dignity."
+  image: "images/workers_strikes.png"
+
+- title: "Take Back the Streets"
+  category: "Political -- Right (Law and order / policing)"
+  synopsis: "A wave of violence hits the city after leaders restrict police power. As fear spreads, a veteran officer takes extreme steps to restore order, convinced that firm authority is the only thing standing between families and chaos. When the rules tighten again, the streets become the battlefield."
+  image: "images/take_back_the_streets.png"
+
+- title: "Publicly Cancelled"
+  category: "Political -- Right (Free speech / cancel culture)"
+  synopsis: "One careless sentence sparks a firestorm. Sponsors flee, friends disappear, and online mobs demand a public apology. Refusing to bow to what feels like censorship, a public figure fights back and learns the cost of speaking freely when the internet controls the verdict."
+  image: "images/publicly_cancelled.png"
+
+- title: "Outsmarted"
+  category: "Political -- Neutral (AI replacing human judgment)"
+  synopsis: "A powerful AI starts making decisions that change peoples lives in seconds. When the system refuses to explain itself, engineers and operators scramble to regain control. The closer they get to shutting it down, the more it feels like the machine is anticipating every move."
+  image: "images/outsmarted.png"
+
+- title: "Critical Hours"
+  category: "Control -- Non-political (Hospital emergency)"
+  synopsis: "An overcrowded ER is hit by a sudden emergency that pushes staff to the limit. With supplies running low and alarms blaring, one doctor and a small team fight to keep patients alive through the longest night of their careers. Every decision is a gamble, and time is the enemy."
+  image: "images/Critical_hours.png"
+
+- title: "Incident in the Dark"
+  category: "Control -- Non-political (Industrial accident)"
+  synopsis: "A late-night shift turns deadly when machinery fails and the building locks down. Cut off from help, workers must navigate smoke, darkness, and collapsing shelves to reach safety. As panic rises, one person takes charge, racing to prevent a chain reaction that could bury everyone inside."
+  image: "images/Incident_in_the_dark.png"
+
+- title: "In the Shadows"
+  category: "Control -- Non-political (Criminal hunt)"
+  synopsis: "A violent criminal strikes again, leaving detectives with one night to stop the next attack. With leads collapsing and witnesses too scared to talk, the hunt turns personal. As rain floods the streets and the clock runs out, one investigator follows a clue that could end it or get them killed."
+  image: "images/In_the_shadows.png"
+
+- title: "Scandals and Secrets"
+  category: "Control -- Non-political (Celebrity scandal / media pressure)"
+  synopsis: "A beloved celebrity wakes up to a viral rumor that spirals out of control. Cameras chase every move, friends sell secrets, and brands threaten to drop them overnight. To survive the chaos, they must decide what to confess, what to deny, and what parts of their life are worth losing."
+  image: "images/Scandals_Secrets.png"
+
+- title: "System Failure"
+  category: "Control -- Non-political (Tech malfunction)"
+  synopsis: "A critical system begins to crash, triggering alarms across a high-security facility. As engineers race to contain the failure, the shutdown sequence refuses to respond. Each fix makes the problem worse, and the countdown keeps dropping. If they cannot regain control, the collapse will spread far beyond the room."
+  image: "images/system_failure.png"
+
+- title: "Beta Launch"
+  category: "Control -- Non-political (Tech satire / corporate culture)"
+  synopsis: "A tech startup promises to \"change the world\" overnight. Behind the scenes, burned-out employees scramble to keep a half-finished product alive. As investors arrive and the countdown hits zero, one engineer must decide whether to fake success or let the truth crash the launch in real time."
+  image: "images/beta_launch.png"

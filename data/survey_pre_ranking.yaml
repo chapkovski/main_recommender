@@ -1,0 +1,10 @@
+showQuestionNumbers: off
+pages:
+  - name: movie_ranking
+    elements:
+      - type: ranking
+        name: ranking_json
+        title: Drag and drop the movies below into your preferred order.
+        description: Top = most preferred movie, bottom = least preferred.
+        isRequired: true
+        choices: []

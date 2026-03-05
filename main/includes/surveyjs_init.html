@@ -1,0 +1,12 @@
+<script>
+(function() {
+    const hooks = window.surveyPageHooks || {};
+    SurveyJSRuntime.renderSurveySafely({
+        surveyJson: {{ survey_json|safe }},
+        containerId: 'surveyContainer',
+        hiddenFieldId: 'surveyResults',
+        formId: 'form',
+        hooks,
+    });
+})();
+</script>
