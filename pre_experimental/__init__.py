@@ -355,7 +355,7 @@ class Consent(Page):
         else:
             logger.warning('user-agents package not installed; User-Agent details were not parsed.')
             self.player.user_agent_device = user_agent_string[:255]
-        self.player.save()
+        
         return super().get(*args, **kwargs)
 
 
