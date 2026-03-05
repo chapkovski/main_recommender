@@ -1,52 +1,107 @@
 # Movie Recommender Experiment (oTree)
 
-This repository contains an oTree experiment with three apps:
+Current app status (code in this repository) is:
 
-- `pre_experimental`: instructions, comprehension check, short survey, and private ranking task.
-- `main`: repeated rate/skip movie decisions.
-- `post_experimental`: debrief questionnaire and payment summary.
+- One session config: `movie_recommender`
+- App sequence: `pre_experimental -> main -> post_experimental`
+- Currency: `EUR`
+- Main task rounds: `len(data/movies.yaml)` (currently 16 movies)
 
-## Movie Data Source
+## End-to-end Flow
 
-Movie stimuli are defined in [`data/movies.yaml`](data/movies.yaml).
+### 1) `pre_experimental` (1 round)
 
-They are loaded by [`movie_data.py`](movie_data.py), which exposes:
+Current page sequence:
 
-- `MOVIES`
-- `MOVIE_IDS`
-- `NUM_ROUNDS`
+1. `Consent`
+2. `InstructionsIntro`
+3. `ComprehensionCheck`
+4. `PolPage`
+5. `MovieRanking`
 
-`main` uses this data directly, and the number of rounds is computed as `len(MOVIES)`.
+Notes:
 
-## Survey Definitions
+- `PoliticalSurvey` exists in code but is currently not in `page_sequence`.
+- `MovieRanking` uses server-side TMDb search via `live_method`.
+- Participants must rank exactly `tmdb_favorites_required` movies (default: `5`).
 
-SurveyJS definitions are stored in `data/*.yaml` and loaded server-side before rendering:
+### 2) `main` (N rounds, N = number of movies)
 
-- `data/survey_main_rating.yaml`
-- `data/survey_pre_comprehension.yaml`
-- `data/survey_pre_political.yaml`
-- `data/survey_post_questionnaire.yaml`
+Current page sequence:
 
-Shared SurveyJS rendering assets:
+1. `RatingDecision` (repeats each round)
+2. `MainResults` (final round only)
 
-- Runtime module: `_static/global/surveyjs_runtime.js`
-- Reusable template includes: `main/includes/surveyjs_css.html`, `main/includes/surveyjs_js.html`, `main/includes/surveyjs_init.html`
+Notes:
 
-## TMDb Setup
+- Each round shows one movie from a participant-specific randomized order.
+- Participants choose `skip` (no cost) or `rate` (cost `EUR 0.25`).
+- Endowment is `EUR 2.50`.
 
-The pre-experimental movie ranking page searches TMDb via oTree `live_method` on the server side.
+### 3) `post_experimental` (1 round)
 
-Set your TMDb API key in `.env` (already gitignored) before running:
+Current page sequence:
 
-```bash
-TMDB_API_KEY="your_tmdb_api_key"
-```
+1. `PostQuestionnaire`
+2. `FinalPaymentInfo`
+3. `FinalForProlific` (displayed only when `for_prolific=True`)
 
-The env var name and related TMDb behavior can be configured in `SESSION_CONFIG_DEFAULTS` in [`settings.py`](settings.py).
+Notes:
 
-Political/neutral statement prompts for treatment logic are stored in [`data/polquestions.csv`](data/polquestions.csv).
+- `FinalForProlific` redirects to Prolific with configured completion code.
 
-## Run
+## Treatment Logic
+
+Treatment is assigned in `pre_experimental.creating_session()` in a deterministic 4-cell cycle by `id_in_subsession`:
+
+1. `heterogeneous_political`
+2. `homogeneous_political`
+3. `heterogeneous_neutral`
+4. `homogeneous_neutral`
+
+Stored fields:
+
+- Participant-level: `treatment_heterogeneous`, `treatment_political`, `treatment_label` (`PARTICIPANT_FIELDS`)
+- Player-level snapshots are also stored in both `pre_experimental.Player` and `main.Player`:
+  - `treatment_heterogeneous`
+  - `treatment_political`
+
+Political/neutral statements are loaded from `data/polquestions.csv` (`name,text,treatment`, where treatment is `polarizing` or `neutral`).
+
+## Data and Survey Definitions
+
+- Movies: `data/movies.yaml` (required keys per movie: `title`, `category`, `synopsis`, `image`)
+- SurveyJS YAML files loaded server-side through `survey_data.py`:
+  - `data/survey_pre_comprehension.yaml`
+  - `data/survey_pre_political.yaml`
+  - `data/survey_main_rating.yaml`
+  - `data/survey_post_questionnaire.yaml`
+- `data/survey_pre_ranking.yaml` exists but is not currently used in page logic.
+
+Shared SurveyJS runtime:
+
+- `_static/global/surveyjs_runtime.js`
+- `surveyjs_page.py` maps submitted `surveyResults` JSON into oTree form fields.
+
+## Configuration (`settings.py`)
+
+Default session options include:
+
+- TMDb:
+  - `tmdb_api_key_env_var='TMDB_API_KEY'`
+  - `tmdb_search_base_url='https://api.themoviedb.org/3/search/movie'`
+  - `tmdb_language='en-US'`
+  - `tmdb_include_adult=False`
+  - `tmdb_results_limit=12`
+  - `tmdb_favorites_required=5`
+  - `tmdb_debug_errors=False`
+- Prolific:
+  - `for_prolific=False`
+  - `prolific_base_return_url='https://app.prolific.com/submissions/complete?cc='`
+  - `prolific_return_code='CW6532UV'`
+  - `prolific_no_id_code='NO_ID'`
+
+## Local Run
 
 1. Install dependencies:
 
@@ -54,10 +109,17 @@ Political/neutral statement prompts for treatment logic are stored in [`data/pol
 pip install -r requirements.txt
 ```
 
-2. Start oTree:
+2. Set environment variables (recommended):
+
+```bash
+TMDB_API_KEY="your_tmdb_api_key"
+OTREE_ADMIN_PASSWORD="your_admin_password"
+```
+
+3. Start oTree:
 
 ```bash
 otree devserver
 ```
 
-3. Open the local URL shown in the terminal.
+4. Open the URL printed in the terminal.
