@@ -5,7 +5,7 @@ Current app status (code in this repository) is:
 - One session config: `movie_recommender`
 - App sequence: `pre_experimental -> main -> post_experimental`
 - Currency: `EUR`
-- Main task rounds: `len(data/movies.yaml)` (currently 16 movies)
+- Main task rounds: `len(data/movies.yaml)` (currently 10 movies)
 
 ## End-to-end Flow
 
