@@ -102,8 +102,9 @@ Search TMDb and build your top {{ favorites_required }} movies. Drag to reorder 
                         <div class="rank-pill">[[ index + 1 ]]</div>
                         <img v-if="posterUrl(movie.poster_path)" class="poster" :src="posterUrl(movie.poster_path)" :alt="movie.title" />
                         <div class="flex-grow-1">
-                            <div class="fw-semibold">[[ movie.title ]]</div>
-                            <div class="small text-muted">[[ releaseYear(movie.release_date) ]]</div>
+                            <div class="fw-semibold" :title="tooltipText(movie)">[[ movie.title ]]</div>
+                            <div class="small text-muted">[[ releaseYear(movie.release_date) ]] • Director: [[ directorLabel(movie) ]]</div>
+                            <div class="small text-muted" v-if="castLabel(movie)">Cast: [[ castLabel(movie) ]]</div>
                         </div>
                         <button class="btn btn-sm btn-outline-danger" type="button" @click="removeFavorite(movie.id)">Remove</button>
                     </li>
@@ -131,8 +132,9 @@ Search TMDb and build your top {{ favorites_required }} movies. Drag to reorder 
                         <div class="d-flex gap-3">
                             <img v-if="posterUrl(movie.poster_path)" class="poster" :src="posterUrl(movie.poster_path)" :alt="movie.title" />
                             <div>
-                                <div class="fw-semibold">[[ movie.title ]]</div>
-                                <div class="small text-muted">[[ releaseYear(movie.release_date) ]]</div>
+                                <div class="fw-semibold" :title="tooltipText(movie)">[[ movie.title ]]</div>
+                                <div class="small text-muted">[[ releaseYear(movie.release_date) ]] • Director: [[ directorLabel(movie) ]]</div>
+                                <div class="small text-muted" v-if="castLabel(movie)">Cast: [[ castLabel(movie) ]]</div>
                             </div>
                         </div>
                         <button
@@ -196,6 +198,9 @@ const app = createApp({
                     title: movie.title || "",
                     release_date: movie.release_date || "",
                     poster_path: movie.poster_path || "",
+                    overview: movie.overview || "",
+                    director: movie.director || "",
+                    cast: Array.isArray(movie.cast) ? movie.cast : [],
                 }))
             );
             rankingInput().value = serialized;
@@ -211,6 +216,19 @@ const app = createApp({
         const posterUrl = (posterPath) => posterPath ? `https://image.tmdb.org/t/p/w185${posterPath}` : "";
         const releaseYear = (releaseDate) => releaseDate ? String(releaseDate).slice(0, 4) : "????";
         const isFavorite = (id) => favorites.value.some((m) => m.id === id);
+        const directorLabel = (movie) => (movie && movie.director) ? movie.director : "n/a";
+        const castLabel = (movie) =>
+            movie && Array.isArray(movie.cast) && movie.cast.length ? movie.cast.join(", ") : "";
+        const tooltipText = (movie) => {
+            if (!movie) return "";
+            const lines = [];
+            if (movie.overview) lines.push(movie.overview);
+            const director = directorLabel(movie);
+            if (director && director !== "n/a") lines.push(`Director: ${director}`);
+            const cast = castLabel(movie);
+            if (cast) lines.push(`Cast: ${cast}`);
+            return lines.join("\n");
+        };
 
         const addFavorite = (movie) => {
             if (favorites.value.length >= MAX_FAVORITES) {
@@ -227,9 +245,16 @@ const app = createApp({
                     title: movie.title || "",
                     release_date: movie.release_date || "",
                     poster_path: movie.poster_path || "",
+                    overview: movie.overview || "",
+                    director: movie.director || "",
+                    cast: Array.isArray(movie.cast) ? movie.cast : [],
                 },
                 ...favorites.value,
             ];
+            activeRequestId.value += 1;
+            isLoading.value = false;
+            query.value = "";
+            results.value = [];
             setStatus(`Added \"${movie.title}\".`);
         };
 
@@ -347,6 +372,9 @@ const app = createApp({
             posterUrl,
             releaseYear,
             isFavorite,
+            directorLabel,
+            castLabel,
+            tooltipText,
             addFavorite,
             removeFavorite,
             resetFavorites,

@@ -99,12 +99,64 @@ def tmdb_search(query, session_config):
     with urlopen(request, timeout=10, context=ctx) as response:
         payload = json.loads(response.read().decode('utf-8'))
 
+    enrich_results = bool(session_config.get('tmdb_enrich_results', True))
+    movie_base_url = session_config.get('tmdb_movie_base_url', 'https://api.themoviedb.org/3/movie')
+    try:
+        cast_limit = int(session_config.get('tmdb_cast_limit', 3))
+    except (TypeError, ValueError):
+        cast_limit = 3
+    cast_limit = max(1, min(5, cast_limit))
+
+    def fetch_movie_credits(movie_id):
+        details_params = dict(
+            api_key=api_key,
+            language=language,
+            append_to_response='credits',
+        )
+        details_url = f"{movie_base_url}/{movie_id}?{urlencode(details_params)}"
+        details_request = Request(details_url, headers={'Accept': 'application/json'})
+        with urlopen(details_request, timeout=10, context=ctx) as details_response:
+            details_payload = json.loads(details_response.read().decode('utf-8'))
+
+        credits = details_payload.get('credits') or {}
+        crew = credits.get('crew') or []
+        cast = credits.get('cast') or []
+
+        director = ''
+        for person in crew:
+            if not isinstance(person, dict):
+                continue
+            if person.get('job') == 'Director':
+                director = person.get('name') or ''
+                if director:
+                    break
+
+        cast_names = []
+        for person in cast:
+            if not isinstance(person, dict):
+                continue
+            name = person.get('name') or ''
+            if name:
+                cast_names.append(name)
+            if len(cast_names) >= cast_limit:
+                break
+
+        return director, cast_names
+
     movies = []
     for item in payload.get('results', [])[:limit]:
         movie_id = item.get('id')
         title = item.get('title') or item.get('original_title')
         if not movie_id or not title:
             continue
+
+        director = ''
+        cast_names = []
+        if enrich_results:
+            try:
+                director, cast_names = fetch_movie_credits(int(movie_id))
+            except Exception as exc:
+                logger.warning('TMDb details fetch failed for movie_id=%s: %s', movie_id, exc)
 
         movies.append(
             dict(
@@ -113,6 +165,8 @@ def tmdb_search(query, session_config):
                 release_date=item.get('release_date') or '',
                 poster_path=item.get('poster_path') or '',
                 overview=item.get('overview') or '',
+                director=director,
+                cast=cast_names,
             )
         )
 
