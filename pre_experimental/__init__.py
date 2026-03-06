@@ -632,7 +632,7 @@ class MovieRanking(Page):
 
 
 page_sequence = [
-    Consent, InstructionsIntro, ComprehensionCheck, PolPage,
+    # Consent, InstructionsIntro, ComprehensionCheck, PolPage,
     # PoliticalSurvey,
-    MovieRanking
+    # MovieRanking
     ]

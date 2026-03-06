@@ -1,1 +1,42 @@
 <link href="https://unpkg.com/survey-core@2.5.9/survey-core.min.css" rel="stylesheet">
+<style>
+    #surveyContainer .sd-selectbase__item {
+        margin: 0 0 0.5rem 0;
+        padding: 0.55rem 0.7rem;
+        border: 1px solid #c7ced6;
+        border-radius: 0.5rem;
+        background-color: #fff;
+    }
+
+    #surveyContainer .sd-selectbase__item:hover {
+        border-color: #8fb3dc;
+        background-color: #f4f8ff;
+    }
+
+    #surveyContainer .sd-selectbase__item.sd-item--checked {
+        border-color: #0d6efd;
+        background-color: #eaf2ff;
+    }
+
+    #surveyContainer .sd-item__control {
+        transform: scale(1.2);
+        transform-origin: left center;
+        margin-right: 0.35rem;
+    }
+
+    #surveyContainer .sd-item__control-label {
+        color: #1f2933;
+        font-size: 1rem;
+        font-weight: 500;
+        line-height: 1.4;
+    }
+
+    @media (min-width: 992px) {
+        #surveyContainer .sd-item__control {
+            transform: scale(1.28);
+        }
+        #surveyContainer .sd-item__control-label {
+            font-size: 1.05rem;
+        }
+    }
+</style>

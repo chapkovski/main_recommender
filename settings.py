@@ -27,6 +27,13 @@ SESSION_CONFIGS = [
         app_sequence=['pre_experimental', 'main', 'post_experimental'],
         num_demo_participants=2,
     ),
+    # let's add post experimental only
+    # dict(
+    #     name='post_exp_only',
+    #      app_sequence=['post_experimental'],
+    #     num_demo_participants=1
+    # )
+    
 ]
 
 # if you set a property in SESSION_CONFIG_DEFAULTS, it will be inherited by all configs
