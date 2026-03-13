@@ -7,6 +7,19 @@ Final Payment Information
 Thank you for completing the study.
 </p>
 
+<div class="alert alert-warning border border-3 border-dark shadow-sm">
+    <h4 class="alert-heading">Important information about your bonus</h4>
+    <p class="mb-2">
+        Your performance bonus cannot be calculated immediately.
+    </p>
+    <p class="mb-2">
+        We first need to collect other participants' responses to complete the matching/processing step.
+    </p>
+    <p class="mb-0">
+        After that, your final bonus will be calculated and added to your payment.
+    </p>
+</div>
+
 <h4>Your rating-cost summary</h4>
 <ul>
     <li>Initial endowment: {{ endowment }}</li>
@@ -18,7 +31,7 @@ Thank you for completing the study.
 <h4>Performance bonus rule</h4>
 <p>
 Your bonus is <strong>{{ bonus_per_correct }}</strong> per correctly guessed movie position (up to 5 positions).
-Matching/guessing is processed later, so your final bonus is added after that step.
+This is why the final bonus is added only after the later matching/processing step.
 </p>
 
 {{ if true_ranking }}

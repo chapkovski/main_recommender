@@ -24,7 +24,10 @@ load_dotenv()
 SESSION_CONFIGS = [
     dict(
         name='movie_recommender',
-        app_sequence=['pre_experimental', 'main', 'post_experimental'],
+        app_sequence=[
+            'pre_experimental', 'main', 
+            'post_experimental'
+            ],
         num_demo_participants=2,
     ),
     # let's add post experimental only

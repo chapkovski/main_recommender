@@ -119,4 +119,6 @@ class FinalForProlific(Page):
         return RedirectResponse(f'{base_return_url}{ending}')
 
 
-page_sequence = [PostQuestionnaire, FinalPaymentInfo, FinalForProlific]
+page_sequence = [
+    PostQuestionnaire,
+    FinalPaymentInfo, FinalForProlific]
