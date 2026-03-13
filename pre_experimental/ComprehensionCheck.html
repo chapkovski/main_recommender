@@ -11,6 +11,9 @@ Comprehension Questions
 {{ include 'main/includes/instructions_modal.html' }}
 
 <p>Please answer all questions correctly to continue.</p>
+{{ if hide_correctly_answered }}
+    <p class="text-muted mb-4 d-none">Questions you already answered correctly are hidden. Please answer the remaining {{ pending_question_count }} question(s).</p>
+{{ endif }}
 
 
 <div class="survey-shell">

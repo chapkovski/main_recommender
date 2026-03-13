@@ -31,6 +31,8 @@ Pre-experimental survey and private movie ranking.
 PRE_COMPREHENSION_SURVEY_DEFINITION = load_survey_definition('survey_pre_comprehension.yaml')
 PRE_POLITICAL_SURVEY_DEFINITION = load_survey_definition('survey_pre_political.yaml')
 
+COMPREHENSION_FIELDS = ['cq_endowment', 'cq_rating_cost', 'cq_rounds', 'cq_max_bonus']
+
 TREATMENT_CYCLE = [
     dict(heterogeneous='yes', political='yes', label='heterogeneous_political'),
     dict(heterogeneous='no', political='yes', label='homogeneous_political'),
@@ -50,6 +52,46 @@ def set_element_choices(definition, element_name, choices):
             if element.get('name') == element_name:
                 element['choices'] = choices
                 return
+
+
+def filter_survey_elements(definition, allowed_names):
+    allowed = set(allowed_names)
+    for page in definition.get('pages', []):
+        page['elements'] = [
+            element
+            for element in page.get('elements', [])
+            if element.get('name') in allowed
+        ]
+
+
+def comprehension_correct_answers():
+    return {
+        'cq_endowment': '2.50',
+        'cq_rating_cost': '0.25',
+        'cq_rounds': str(C.MAIN_NUM_ROUNDS),
+        'cq_max_bonus': '10',
+    }
+
+
+def get_pending_comprehension_fields(participant):
+    pending_fields = participant.vars.get('comprehension_pending_fields')
+    if not isinstance(pending_fields, list):
+        return COMPREHENSION_FIELDS.copy()
+
+    filtered = [field for field in COMPREHENSION_FIELDS if field in pending_fields]
+    return filtered or COMPREHENSION_FIELDS.copy()
+
+
+def get_saved_comprehension_answers(participant):
+    saved_answers = participant.vars.get('comprehension_saved_answers')
+    if not isinstance(saved_answers, dict):
+        return {}
+
+    return {
+        field_name: str(saved_answers[field_name])
+        for field_name in COMPREHENSION_FIELDS
+        if field_name in saved_answers
+    }
 
 
 def required_favorites(session_config):
@@ -421,7 +463,7 @@ class InstructionsIntro(Page):
 
 class ComprehensionCheck(SurveyJSPage):
     form_model = 'player'
-    form_fields = ['cq_endowment', 'cq_rating_cost', 'cq_rounds', 'cq_max_bonus']
+    form_fields = COMPREHENSION_FIELDS
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -434,38 +476,48 @@ class ComprehensionCheck(SurveyJSPage):
                 for value in sorted({max(1, C.MAIN_NUM_ROUNDS - 5), C.MAIN_NUM_ROUNDS, C.MAIN_NUM_ROUNDS + 5})
             ],
         )
+        pending_fields = get_pending_comprehension_fields(player.participant)
+        filter_survey_elements(survey_definition, pending_fields)
         return dict(
             num_rounds=C.MAIN_NUM_ROUNDS,
             survey_json=json.dumps(survey_definition),
+            pending_question_count=len(pending_fields),
+            hide_correctly_answered=int(player.participant.vars.get('comprehension_failed_attempts', 0)) > 0,
         )
 
     def process_survey_data(self, data):
-        return dict(
-            cq_endowment=data.get('cq_endowment'),
-            cq_rating_cost=data.get('cq_rating_cost'),
-            cq_rounds=data.get('cq_rounds'),
-            cq_max_bonus=data.get('cq_max_bonus'),
-        )
+        merged_answers = get_saved_comprehension_answers(self.player.participant)
+        for field_name in COMPREHENSION_FIELDS:
+            if field_name in data:
+                merged_answers[field_name] = data.get(field_name)
+        return merged_answers
 
     @staticmethod
     def error_message(player: Player, values):
-        correct_answers = {
-            'cq_endowment': '2.50',
-            'cq_rating_cost': '0.25',
-            'cq_rounds': str(C.MAIN_NUM_ROUNDS),
-            'cq_max_bonus': '10',
-        }
-
-        for field_name, expected in correct_answers.items():
-            if values[field_name] != expected:
-                attempts = int(player.participant.vars.get('comprehension_failed_attempts', 0)) + 1
-                player.participant.vars['comprehension_failed_attempts'] = attempts
-                player.comprehension_failed_attempts = attempts
-                return 'One or more answers are incorrect. Please review the instructions and try again.'
+        correct_answers = comprehension_correct_answers()
+        incorrect_fields = [
+            field_name
+            for field_name, expected in correct_answers.items()
+            if values.get(field_name) != expected
+        ]
+        if incorrect_fields:
+            saved_answers = {
+                field_name: values[field_name]
+                for field_name in COMPREHENSION_FIELDS
+                if values.get(field_name) == correct_answers[field_name]
+            }
+            attempts = int(player.participant.vars.get('comprehension_failed_attempts', 0)) + 1
+            player.participant.vars['comprehension_failed_attempts'] = attempts
+            player.participant.vars['comprehension_pending_fields'] = incorrect_fields
+            player.participant.vars['comprehension_saved_answers'] = saved_answers
+            player.comprehension_failed_attempts = attempts
+            return 'One or more answers are incorrect. Please review the instructions and try again.'
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         player.comprehension_failed_attempts = int(player.participant.vars.get('comprehension_failed_attempts', 0))
+        player.participant.vars.pop('comprehension_pending_fields', None)
+        player.participant.vars.pop('comprehension_saved_answers', None)
 
 
 class PolPage(SurveyJSPage):
