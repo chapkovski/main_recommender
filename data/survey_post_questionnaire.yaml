@@ -23,5 +23,5 @@ pages:
         isRequired: false
       - type: comment
         name: comments
-        title: Any additional comments? (optional)
-        isRequired: false
+        title: Please provide any comments or feedback, especially if any instructions were unclear or you experienced any technical glitches.
+        isRequired: true
