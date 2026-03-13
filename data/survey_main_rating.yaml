@@ -4,7 +4,7 @@ pages:
     elements:
       - type: radiogroup
         name: decision
-        title: How much would like to see this movie realized?
+        title: How much would you like to see this movie realized?
         isRequired: true
         colCount: 2
         choices:
