@@ -1,5 +1,5 @@
 {{ block title }}
-Part 1: Short Survey
+Survey
 {{ endblock }}
 
 {{ block styles }}
@@ -9,11 +9,11 @@ Part 1: Short Survey
 
 {{ block content }}
 <p>
-Please answer the following political opinion questions. After this page, you will rank 5 movies.
+Please answer the following questions.
 </p>
 
 {{ if form.errors }}
-<div class="alert alert-danger">{{ form.errors }}</div>
+<div class="alert alert-danger d-none">{{ form.errors }}</div>
 {{ endif }}
 
 <div class="survey-shell">

@@ -9,6 +9,11 @@ Comprehension Questions
 
 {{ block content }}
 {{ include 'main/includes/instructions_modal.html' }}
+<div style="margin-bottom: 14px;">
+    <button type="button" class="btn btn-outline-primary btn-sm" onclick="openPayoffCalculatorModal()">
+        Open payoff calculator
+    </button>
+</div>
 
 <p>Please answer all questions correctly to continue.</p>
 {{ if hide_correctly_answered }}

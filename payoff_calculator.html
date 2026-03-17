@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expected Payoff Calculator</title>
+    <style>
+      :root {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: #1f2933;
+        background: #f3f4f6;
+        line-height: 1.5;
+      }
+      body {
+        margin: 0;
+        padding: 1.5rem;
+        background: #f3f4f6;
+      }
+      #app {
+        max-width: 820px;
+        margin: 0 auto;
+      }
+      .card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+      }
+      h1 {
+        margin: 0 0 0.35rem;
+        font-size: 1.9rem;
+      }
+      .lead {
+        margin: 0;
+        color: #52606d;
+      }
+      .input-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.25rem;
+        margin-top: 1.5rem;
+      }
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      label {
+        font-weight: 600;
+      }
+      input[type="number"] {
+        width: 100%;
+        max-width: 120px;
+        padding: 0.45rem 0.55rem;
+        border: 1px solid #c8d0d9;
+        border-radius: 8px;
+        font-size: 1rem;
+      }
+      input[type="range"] {
+        width: 100%;
+        accent-color: #2563eb;
+      }
+      .formula-box {
+        border: 1px dashed #bfd2ea;
+        border-radius: 10px;
+        padding: 1rem;
+        margin: 1.5rem 0 1rem;
+        background: #f8fafc;
+      }
+      .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.9rem;
+      }
+      .result-card {
+        border: 1px solid #d7dce2;
+        border-radius: 10px;
+        padding: 0.9rem;
+        background: #fff;
+      }
+      .result-card.highlight {
+        border-color: #87b4f5;
+        background: #eef5ff;
+      }
+      .label {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #52606d;
+      }
+      .value {
+        margin: 0.25rem 0 0;
+        font-size: 1.65rem;
+        font-weight: 700;
+        color: #111827;
+      }
+      .note {
+        margin: 1rem 0 0;
+        color: #52606d;
+      }
+      .actions {
+        margin-top: 1.25rem;
+      }
+      button {
+        border: none;
+        background: #2563eb;
+        color: #fff;
+        padding: 0.65rem 1.1rem;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #1d4ed8;
+      }
+      @media (max-width: 600px) {
+        body {
+          padding: 1rem;
+        }
+        .card {
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <main class="card" aria-live="polite">
+        <header>
+          <h1>Expected Payoff Calculator</h1>
+          <p class="lead">
+            This version matches the current instructions: you start with EUR 2.50, each of your
+            ratings costs EUR 0.25, and each correct guess pays EUR 2.
+          </p>
+        </header>
+
+        <section class="input-grid" aria-label="Ratings">
+          <div class="input-group">
+            <label for="yourRatings">Your ratings (0-10)</label>
+            <input id="yourRatings" type="number" min="0" max="10" step="1" value="0" />
+            <input id="yourRatingsRange" type="range" min="0" max="10" step="1" value="0" />
+          </div>
+          <div class="input-group">
+            <label for="partnerRatings">Partner ratings (0-10)</label>
+            <input id="partnerRatings" type="number" min="0" max="10" step="1" value="0" />
+            <input id="partnerRatingsRange" type="range" min="0" max="10" step="1" value="0" />
+          </div>
+        </section>
+
+        <section class="formula-box">
+          <div><strong>Expected correct guesses</strong> = 1 + 0.10 x total ratings</div>
+          <div>
+            <strong>Expected payoff</strong> = EUR 2.50 - EUR 0.25 x your ratings + EUR 2 x
+            expected correct guesses
+          </div>
+        </section>
+
+        <section class="results-grid">
+          <article class="result-card">
+            <p class="label">Total ratings</p>
+            <p class="value" id="totalRatings">0</p>
+          </article>
+          <article class="result-card">
+            <p class="label">Expected correct guesses</p>
+            <p class="value" id="expectedCorrect">1.00</p>
+          </article>
+          <article class="result-card">
+            <p class="label">Your rating cost</p>
+            <p class="value" id="ratingCost">EUR 0.00</p>
+          </article>
+          <article class="result-card highlight">
+            <p class="label">Your expected payoff</p>
+            <p class="value" id="expectedPayoff">EUR 4.50</p>
+          </article>
+        </section>
+
+        <p class="note">
+          This shows an expected payoff based on average learning. Your realized final payment can
+          be higher or lower.
+        </p>
+
+        <div class="actions">
+          <button type="button" id="resetCalculator">Reset</button>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        const yourRatings = document.getElementById("yourRatings");
+        const yourRatingsRange = document.getElementById("yourRatingsRange");
+        const partnerRatings = document.getElementById("partnerRatings");
+        const partnerRatingsRange = document.getElementById("partnerRatingsRange");
+        const totalRatings = document.getElementById("totalRatings");
+        const expectedCorrect = document.getElementById("expectedCorrect");
+        const ratingCost = document.getElementById("ratingCost");
+        const expectedPayoff = document.getElementById("expectedPayoff");
+        const resetButton = document.getElementById("resetCalculator");
+
+        function clamp(value) {
+          if (!Number.isFinite(value)) {
+            return 0;
+          }
+          return Math.min(Math.max(value, 0), 10);
+        }
+
+        function readInteger(input) {
+          return clamp(Number.parseInt(input.value || "0", 10));
+        }
+
+        function formatCurrency(value) {
+          return value.toLocaleString("de-DE", {
+            style: "currency",
+            currency: "EUR",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+        }
+
+        function render(yourValue, partnerValue) {
+          const total = yourValue + partnerValue;
+          const expected = 1 + 0.1 * total;
+          const cost = 0.25 * yourValue;
+          const payoff = 2.5 - cost + 2 * expected;
+
+          totalRatings.textContent = String(total);
+          expectedCorrect.textContent = expected.toFixed(2);
+          ratingCost.textContent = formatCurrency(cost);
+          expectedPayoff.textContent = formatCurrency(payoff);
+        }
+
+        function updateFromNumbers() {
+          const yourValue = readInteger(yourRatings);
+          const partnerValue = readInteger(partnerRatings);
+          yourRatings.value = String(yourValue);
+          yourRatingsRange.value = String(yourValue);
+          partnerRatings.value = String(partnerValue);
+          partnerRatingsRange.value = String(partnerValue);
+          render(yourValue, partnerValue);
+        }
+
+        function updateFromRanges() {
+          const yourValue = readInteger(yourRatingsRange);
+          const partnerValue = readInteger(partnerRatingsRange);
+          yourRatings.value = String(yourValue);
+          yourRatingsRange.value = String(yourValue);
+          partnerRatings.value = String(partnerValue);
+          partnerRatingsRange.value = String(partnerValue);
+          render(yourValue, partnerValue);
+        }
+
+        yourRatings.addEventListener("input", updateFromNumbers);
+        partnerRatings.addEventListener("input", updateFromNumbers);
+        yourRatingsRange.addEventListener("input", updateFromRanges);
+        partnerRatingsRange.addEventListener("input", updateFromRanges);
+        resetButton.addEventListener("click", function () {
+          yourRatings.value = "0";
+          yourRatingsRange.value = "0";
+          partnerRatings.value = "0";
+          partnerRatingsRange.value = "0";
+          render(0, 0);
+        });
+
+        render(0, 0);
+      })();
+    </script>
+  </body>
+</html>

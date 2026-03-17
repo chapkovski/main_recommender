@@ -40,3 +40,17 @@ pages:
             text: Up to EUR 10
           - value: "15"
             text: Up to EUR 15
+      - type: radiogroup
+        name: cq_payoff_example
+        title: Suppose you rate 2 movies and your matched partner rates 3 movies. What is your expected payoff?
+        description: Use the payoff calculator if needed.
+        isRequired: true
+        choices:
+          - value: "4.00"
+            text: EUR 4.00
+          - value: "4.50"
+            text: EUR 4.50
+          - value: "5.00"
+            text: EUR 5.00
+          - value: "5.50"
+            text: EUR 5.50

@@ -79,6 +79,11 @@
         every round, it ends up guessing about 3 out of 5 positions correctly on average. In
         general, the same applies no matter who contributes, as long as the total number of ratings is the same.
     </p>
+    <p>
+        For expected-payoff calculations, you can use:
+        <br />
+        <strong>Expected correct guesses = 1 + 0.10 x total ratings by you and your partner</strong>
+    </p>
 
     <h3>Part 3: Final Bonus and Payment</h3>
     <p>
@@ -88,6 +93,12 @@
             Final Payment = (EUR 2.50 - EUR 0.25 x your ratings) + (EUR 2 x number of correct guesses)
         </strong>
     </p>
+    <p>
+        Because the number of correct guesses is only known at the end, the calculator below shows your
+        <strong>expected payoff</strong> by replacing "number of correct guesses" with the expected number of correct guesses.
+    </p>
+
+    {{ include 'main/includes/payoff_calculator.html' }}
 
     <h4>Examples</h4>
     <table class="table table-sm table-bordered">

@@ -1,0 +1,79 @@
+<div class="payoff-calculator" data-payoff-calculator data-max-ratings="{{ num_rounds }}">
+    <div class="payoff-calculator__inputs">
+        <div class="payoff-calculator__input-group">
+            <label>Your ratings</label>
+            <input
+                class="payoff-calculator__number"
+                type="number"
+                min="0"
+                max="{{ num_rounds }}"
+                step="1"
+                value="0"
+                data-role="your-ratings-number"
+            >
+            <input
+                class="payoff-calculator__range"
+                type="range"
+                min="0"
+                max="{{ num_rounds }}"
+                step="1"
+                value="0"
+                data-role="your-ratings-range"
+            >
+        </div>
+
+        <div class="payoff-calculator__input-group">
+            <label>Partner ratings</label>
+            <input
+                class="payoff-calculator__number"
+                type="number"
+                min="0"
+                max="{{ num_rounds }}"
+                step="1"
+                value="0"
+                data-role="partner-ratings-number"
+            >
+            <input
+                class="payoff-calculator__range"
+                type="range"
+                min="0"
+                max="{{ num_rounds }}"
+                step="1"
+                value="0"
+                data-role="partner-ratings-range"
+            >
+        </div>
+    </div>
+
+    <div class="payoff-calculator__formula">
+        <div><strong>Expected correct guesses</strong> = 1 + 0.10 x total ratings</div>
+        <div><strong>Expected payoff</strong> = EUR 2.50 - EUR 0.25 x your ratings + EUR 2 x expected correct guesses</div>
+    </div>
+
+    <div class="payoff-calculator__results">
+        <div class="payoff-calculator__result-card">
+            <div class="payoff-calculator__result-label">Total ratings</div>
+            <div class="payoff-calculator__result-value" data-role="total-ratings">0</div>
+        </div>
+        <div class="payoff-calculator__result-card">
+            <div class="payoff-calculator__result-label">Expected correct guesses</div>
+            <div class="payoff-calculator__result-value" data-role="expected-correct">1.00</div>
+        </div>
+        <div class="payoff-calculator__result-card">
+            <div class="payoff-calculator__result-label">Your rating cost</div>
+            <div class="payoff-calculator__result-value" data-role="rating-cost">EUR 0.00</div>
+        </div>
+        <div class="payoff-calculator__result-card payoff-calculator__result-card--highlight">
+            <div class="payoff-calculator__result-label">Your expected payoff</div>
+            <div class="payoff-calculator__result-value" data-role="expected-payoff">EUR 4.50</div>
+        </div>
+    </div>
+
+    <p class="payoff-calculator__note">
+        This calculator shows the <strong>expected</strong> payoff based on average learning, not a guaranteed final payment.
+    </p>
+
+    <button type="button" class="btn btn-outline-secondary btn-sm" data-role="reset-payoff-calculator">
+        Reset calculator
+    </button>
+</div>

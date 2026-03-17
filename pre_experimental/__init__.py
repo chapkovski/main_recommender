@@ -31,7 +31,7 @@ Pre-experimental survey and private movie ranking.
 PRE_COMPREHENSION_SURVEY_DEFINITION = load_survey_definition('survey_pre_comprehension.yaml')
 PRE_POLITICAL_SURVEY_DEFINITION = load_survey_definition('survey_pre_political.yaml')
 
-COMPREHENSION_FIELDS = ['cq_endowment', 'cq_rating_cost', 'cq_rounds', 'cq_max_bonus']
+COMPREHENSION_FIELDS = ['cq_endowment', 'cq_rating_cost', 'cq_rounds', 'cq_max_bonus', 'cq_payoff_example']
 
 TREATMENT_CYCLE = [
     dict(heterogeneous='yes', political='yes', label='heterogeneous_political'),
@@ -70,6 +70,7 @@ def comprehension_correct_answers():
         'cq_rating_cost': '0.25',
         'cq_rounds': str(C.MAIN_NUM_ROUNDS),
         'cq_max_bonus': '10',
+        'cq_payoff_example': '5.00',
     }
 
 
@@ -369,6 +370,16 @@ class Player(BasePlayer):
         widget=widgets.RadioSelect,
         label='What is the maximum performance bonus?',
     )
+    cq_payoff_example = models.StringField(
+        choices=[
+            ['4.00', 'EUR 4.00'],
+            ['4.50', 'EUR 4.50'],
+            ['5.00', 'EUR 5.00'],
+            ['5.50', 'EUR 5.50'],
+        ],
+        widget=widgets.RadioSelect,
+        label='Suppose you rate 2 movies and your matched partner rates 3 movies. What is your expected payoff?',
+    )
 
     politics_ideology = models.IntegerField(
         min=0,
@@ -567,21 +578,21 @@ class PolPage(SurveyJSPage):
         player.pol_question_order_json = json.dumps(order)
 
 
-class PoliticalSurvey(SurveyJSPage):
-    form_model = 'player'
-    form_fields = ['politics_ideology', 'politics_interest', 'migration_policy', 'climate_priority']
+# class PoliticalSurvey(SurveyJSPage):
+#     form_model = 'player'
+#     form_fields = ['politics_ideology', 'politics_interest', 'migration_policy', 'climate_priority']
 
-    @staticmethod
-    def vars_for_template(player: Player):
-        return dict(survey_json=json.dumps(PRE_POLITICAL_SURVEY_DEFINITION))
+#     @staticmethod
+#     def vars_for_template(player: Player):
+#         return dict(survey_json=json.dumps(PRE_POLITICAL_SURVEY_DEFINITION))
 
-    def process_survey_data(self, data):
-        return dict(
-            politics_ideology=data.get('politics_ideology'),
-            politics_interest=data.get('politics_interest'),
-            migration_policy=data.get('migration_policy'),
-            climate_priority=data.get('climate_priority'),
-        )
+#     def process_survey_data(self, data):
+#         return dict(
+#             politics_ideology=data.get('politics_ideology'),
+#             politics_interest=data.get('politics_interest'),
+#             migration_policy=data.get('migration_policy'),
+#             climate_priority=data.get('climate_priority'),
+#         )
 
 
 class MovieRanking(Page):
@@ -684,7 +695,8 @@ class MovieRanking(Page):
 
 
 page_sequence = [
-    Consent, InstructionsIntro, ComprehensionCheck, PolPage,
-    PoliticalSurvey,
+    Consent, InstructionsIntro, ComprehensionCheck,
+    PolPage,
+    
     MovieRanking
     ]

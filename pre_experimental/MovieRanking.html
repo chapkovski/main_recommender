@@ -49,7 +49,7 @@ Part 1: Your Private Movie Ranking
 {{ include 'main/includes/instructions_modal.html' }}
 
 <p>
-Search TMDb and build your top {{ favorites_required }} movies. Drag to reorder your preference list (rank 1 = strongest preference).
+Search and build your top {{ favorites_required }} movies. Drag to reorder your preference list (rank 1 = strongest preference).
 </p>
 
 {{ if form.errors }}
@@ -57,6 +57,17 @@ Search TMDb and build your top {{ favorites_required }} movies. Drag to reorder 
 {{ endif }}
 
 <div id="tmdbApp" class="tmdb-shell p-3" v-cloak>
+    <div
+        class="alert mb-3"
+        :class="remainingCount === 0 ? 'alert-success' : 'alert-warning'"
+        role="alert"
+    >
+        <div class="fw-semibold">
+            Add your top [[ maxFavorites ]] movies before continuing.
+        </div>
+        <div>[[ selectionReminder ]]</div>
+    </div>
+
     <div class="row g-3 align-items-center mb-3">
         <div class="col-md-8">
             <input
@@ -159,7 +170,7 @@ Search TMDb and build your top {{ favorites_required }} movies. Drag to reorder 
 
 {{ block scripts }}
 <script type="module">
-import { createApp, ref, onMounted, watch } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
+import { computed, createApp, ref, onMounted, watch } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
 
 const MAX_FAVORITES = {{ favorites_required }};
 
@@ -183,6 +194,15 @@ const app = createApp({
         const draggingIndex = ref(null);
         const dragOverIndex = ref(null);
         const activeRequestId = ref(0);
+        const selectedCount = computed(() => favorites.value.length);
+        const remainingCount = computed(() => Math.max(0, MAX_FAVORITES - selectedCount.value));
+        const selectionReminder = computed(() => {
+            const movieLabel = selectedCount.value === 1 ? "movie" : "movies";
+            if (remainingCount.value === 0) {
+                return `You've added ${selectedCount.value} ${movieLabel}. Your list is complete.`;
+            }
+            return `You've added ${selectedCount.value} ${movieLabel}. ${remainingCount.value} more to add.`;
+        });
 
         const setStatus = (text) => {
             status.value = text;
@@ -367,6 +387,9 @@ const app = createApp({
             results,
             favorites,
             maxFavorites: MAX_FAVORITES,
+            selectedCount,
+            remainingCount,
+            selectionReminder,
             draggingIndex,
             dragOverIndex,
             posterUrl,
