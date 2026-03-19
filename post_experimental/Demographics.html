@@ -1,0 +1,27 @@
+{{ block title }}
+Final Demographics
+{{ endblock }}
+
+{{ block styles }}
+{{ include 'main/includes/surveyjs_css.html' }}
+{{ include 'main/includes/surveyjs_shell_style.html' }}
+{{ endblock }}
+
+{{ block content }}
+<p>Please answer a few short demographic questions before continuing.</p>
+
+{{ if form.errors }}
+<div class="alert alert-danger">{{ form.errors }}</div>
+{{ endif }}
+
+<div class="survey-shell">
+    <div id="surveyContainer"></div>
+</div>
+
+<input type="hidden" id="surveyResults" name="surveyResults" value="">
+{{ endblock }}
+
+{{ block scripts }}
+{{ include 'main/includes/surveyjs_js.html' }}
+{{ include 'main/includes/surveyjs_init.html' }}
+{{ endblock }}

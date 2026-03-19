@@ -43,8 +43,9 @@ Notes:
 Current page sequence:
 
 1. `PostQuestionnaire`
-2. `FinalPaymentInfo`
-3. `FinalForProlific` (displayed only when `for_prolific=True`)
+2. `Demographics`
+3. `FinalPaymentInfo`
+4. `FinalForProlific` (displayed only when `for_prolific=True`)
 
 Notes:
 
@@ -76,6 +77,7 @@ Political/neutral statements are loaded from `data/polquestions.csv` (`name,text
   - `data/survey_pre_political.yaml`
   - `data/survey_main_rating.yaml`
   - `data/survey_post_questionnaire.yaml`
+  - `data/survey_post_demographics.yaml`
 - `data/survey_pre_ranking.yaml` exists but is not currently used in page logic.
 
 Shared SurveyJS runtime:

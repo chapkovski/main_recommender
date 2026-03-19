@@ -1,0 +1,116 @@
+showQuestionNumbers: off
+pages:
+  - name: post_demographics
+    elements:
+      - type: text
+        name: age
+        title: What is your age?
+        isRequired: true
+        inputType: number
+        min: 18
+        max: 100
+        validators:
+          - type: numeric
+            minValue: 18
+            maxValue: 100
+            text: Please enter a whole number between 18 and 100.
+      - type: radiogroup
+        name: gender
+        title: What is your gender?
+        isRequired: true
+        choices:
+          - value: female
+            text: Female
+          - value: male
+            text: Male
+          - value: non_binary
+            text: Non-binary
+          - value: another_identity
+            text: Another identity
+          - value: prefer_not_to_say
+            text: Prefer not to say
+      - type: dropdown
+        name: education
+        title: What is the highest level of education you have completed?
+        isRequired: true
+        placeholder: Select one
+        choices:
+          - value: less_than_high_school
+            text: Less than high school
+          - value: high_school
+            text: High school diploma or equivalent
+          - value: some_college
+            text: Some college, no degree
+          - value: associate
+            text: Associate degree
+          - value: bachelor
+            text: Bachelor's degree
+          - value: master
+            text: Master's degree
+          - value: doctorate
+            text: Doctorate or professional degree
+          - value: prefer_not_to_say
+            text: Prefer not to say
+      - type: dropdown
+        name: income
+        title: What is your annual personal income?
+        description: Please choose the closest category.
+        isRequired: true
+        placeholder: Select one
+        choices:
+          - value: under_15000
+            text: Under EUR 15,000
+          - value: 15000_29999
+            text: EUR 15,000 to 29,999
+          - value: 30000_49999
+            text: EUR 30,000 to 49,999
+          - value: 50000_74999
+            text: EUR 50,000 to 74,999
+          - value: 75000_99999
+            text: EUR 75,000 to 99,999
+          - value: 100000_plus
+            text: EUR 100,000 or more
+          - value: prefer_not_to_say
+            text: Prefer not to say
+      - type: dropdown
+        name: marital_status
+        title: What is your current marital status?
+        isRequired: true
+        placeholder: Select one
+        choices:
+          - value: single
+            text: Single
+          - value: married
+            text: Married
+          - value: partnered
+            text: Living with a partner
+          - value: separated
+            text: Separated
+          - value: divorced
+            text: Divorced
+          - value: widowed
+            text: Widowed
+          - value: prefer_not_to_say
+            text: Prefer not to say
+      - type: dropdown
+        name: employment_status
+        title: What is your current employment status?
+        isRequired: true
+        placeholder: Select one
+        choices:
+          - value: employed_full_time
+            text: Employed full-time
+          - value: employed_part_time
+            text: Employed part-time
+          - value: self_employed
+            text: Self-employed
+          - value: student
+            text: Student
+          - value: unemployed
+            text: Unemployed
+          - value: retired
+            text: Retired
+          - value: other
+            text: Other
+          - value: prefer_not_to_say
+            text: Prefer not to say

@@ -12,6 +12,7 @@ Post-experimental questionnaire and payment summary.
 """
 
 POST_QUESTIONNAIRE_SURVEY_DEFINITION = load_survey_definition('survey_post_questionnaire.yaml')
+POST_DEMOGRAPHICS_SURVEY_DEFINITION = load_survey_definition('survey_post_demographics.yaml')
 
 
 class C(BaseConstants):
@@ -56,6 +57,26 @@ class Player(BasePlayer):
         blank=True,
         label='Any additional comments? (optional)',
     )
+    age = models.IntegerField(
+        min=18,
+        max=100,
+        label='What is your age?',
+    )
+    gender = models.StringField(
+        label='What is your gender?',
+    )
+    education = models.StringField(
+        label='What is the highest level of education you have completed?',
+    )
+    income = models.StringField(
+        label='What is your annual personal income?',
+    )
+    marital_status = models.StringField(
+        label='What is your current marital status?',
+    )
+    employment_status = models.StringField(
+        label='What is your current employment status?',
+    )
 
 
 class PostQuestionnaire(SurveyJSPage):
@@ -73,6 +94,25 @@ class PostQuestionnaire(SurveyJSPage):
             decision_difficulty=data.get('decision_difficulty'),
             strategy_text=data.get('strategy_text'),
             comments=data.get('comments'),
+        )
+
+
+class Demographics(SurveyJSPage):
+    form_model = 'player'
+    form_fields = ['age', 'gender', 'education', 'income', 'marital_status', 'employment_status']
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        return dict(survey_json=json.dumps(POST_DEMOGRAPHICS_SURVEY_DEFINITION))
+
+    def process_survey_data(self, data):
+        return dict(
+            age=data.get('age'),
+            gender=data.get('gender'),
+            education=data.get('education'),
+            income=data.get('income'),
+            marital_status=data.get('marital_status'),
+            employment_status=data.get('employment_status'),
         )
 
 
@@ -121,4 +161,5 @@ class FinalForProlific(Page):
 
 page_sequence = [
     PostQuestionnaire,
+    Demographics,
     FinalPaymentInfo, FinalForProlific]
