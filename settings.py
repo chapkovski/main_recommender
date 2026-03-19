@@ -21,6 +21,14 @@ def load_dotenv():
 
 load_dotenv()
 
+ROOMS = [
+    dict(
+        name='movie_recommender_room',
+        display_name='Movie Recommender Room',
+
+    ),
+]
+
 SESSION_CONFIGS = [
     dict(
         name='movie_recommender',
