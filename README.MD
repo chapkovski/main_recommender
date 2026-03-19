@@ -98,10 +98,10 @@ Default session options include:
   - `tmdb_favorites_required=5`
   - `tmdb_debug_errors=False`
 - Prolific:
-  - `for_prolific=False`
-  - `prolific_base_return_url='https://app.prolific.com/submissions/complete?cc='`
-  - `prolific_return_code='CW6532UV'`
-  - `prolific_no_id_code='NO_ID'`
+  - `for_prolific=True`
+  - `prolific_base_return_url=os.environ.get('DEFAULT_PROLIFIC_BASE_RETURN_URL', 'https://app.prolific.com/submissions/complete?cc=')`
+  - `prolific_return_code=os.environ.get('DEFAULT_PROLIFIC_CODE', 'CW6532UV')`
+  - `prolific_no_id_code=os.environ.get('DEFAULT_PROLIFIC_NO_ID_CODE', 'NO_ID')`
 
 ## Local Run
 
@@ -116,6 +116,7 @@ pip install -r requirements.txt
 ```bash
 TMDB_API_KEY="your_tmdb_api_key"
 OTREE_ADMIN_PASSWORD="your_admin_password"
+DEFAULT_PROLIFIC_CODE="your_prolific_completion_code"
 ```
 
 3. Start oTree:

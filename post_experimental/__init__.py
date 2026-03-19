@@ -1,3 +1,5 @@
+from os import environ
+
 from otree.api import *
 import json
 
@@ -155,7 +157,10 @@ class FinalForProlific(Page):
         if not self.participant.label:
             ending = self.session.config.get('prolific_no_id_code', 'NO_ID')
         else:
-            ending = self.session.config.get('prolific_return_code', 'CW6532UV')
+            ending = self.session.config.get(
+                'prolific_return_code',
+                environ.get('DEFAULT_PROLIFIC_CODE', 'CW6532UV'),
+            )
         return RedirectResponse(f'{base_return_url}{ending}')
 
 

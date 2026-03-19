@@ -21,6 +21,13 @@ def load_dotenv():
 
 load_dotenv()
 
+DEFAULT_PROLIFIC_BASE_RETURN_URL = environ.get(
+    'DEFAULT_PROLIFIC_BASE_RETURN_URL',
+    'https://app.prolific.com/submissions/complete?cc=',
+)
+DEFAULT_PROLIFIC_CODE = environ.get('DEFAULT_PROLIFIC_CODE', 'CW6532UV')
+DEFAULT_PROLIFIC_NO_ID_CODE = environ.get('DEFAULT_PROLIFIC_NO_ID_CODE', 'NO_ID')
+
 ROOMS = [
     dict(
         name='movie_recommender_room',
@@ -59,10 +66,10 @@ SESSION_CONFIG_DEFAULTS = dict(
     real_world_currency_per_point=1.00,
     participation_fee=0.00,
     doc='',
-    for_prolific=False,
-    prolific_base_return_url='https://app.prolific.com/submissions/complete?cc=',
-    prolific_return_code='CW6532UV',
-    prolific_no_id_code='NO_ID',
+    for_prolific=True,
+    prolific_base_return_url=DEFAULT_PROLIFIC_BASE_RETURN_URL,
+    prolific_return_code=DEFAULT_PROLIFIC_CODE,
+    prolific_no_id_code=DEFAULT_PROLIFIC_NO_ID_CODE,
     tmdb_api_key_env_var='TMDB_API_KEY',
     tmdb_search_base_url='https://api.themoviedb.org/3/search/movie',
     tmdb_language='en-US',
